@@ -71,6 +71,10 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
 
+    //Coil para img de url
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
