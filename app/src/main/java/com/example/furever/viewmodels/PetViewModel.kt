@@ -34,11 +34,12 @@ class PetViewModel: ViewModel() {
     }
 
     //Cargar Mascota
+    // En uploadPet(), el ownerId ya viene del auth.currentUser?.email
+    // Asegurarse que la firma de uploadPet NO recibe ownerId desde afuera:
+
     fun uploadPet(pet: PetPost) {
         val usermail = auth.currentUser?.email ?: "Anónimo"
         val petRef = db.collection("pets").document()
-
-        Log.d("imagen",pet.imageUrl.toString())
 
         val newPet = PetPost(
             id = petRef.id,
@@ -46,11 +47,10 @@ class PetViewModel: ViewModel() {
             species = pet.species,
             description = pet.description,
             imageUrl = pet.imageUrl,
-            ownerId = usermail,
+            ownerId = usermail,          // ← siempre desde Auth, nunca del form
             timestamp = System.currentTimeMillis()
         )
         petRef.set(newPet)
-
     }
 
     //Adoptar Mascota

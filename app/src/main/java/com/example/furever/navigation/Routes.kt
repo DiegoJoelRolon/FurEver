@@ -8,4 +8,5 @@ object Routes {
     const val UPLOAD_PET = "upload_pet"
 
     const val PET_DETAIL = "pet_detail/{petId}"
+    const val PROFILE = "profile"
 }
