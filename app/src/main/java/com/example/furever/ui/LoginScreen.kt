@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -16,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.furever.auth.AuthState
 import com.example.furever.auth.AuthViewModel
-
+import com.example.furever.R
 @Composable
 fun LoginScreen(authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
@@ -47,7 +48,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                 color = Color(0xFF3E2723)
             )
             Text(
-                "Encontrá tu compañero ideal",
+                stringResource(R.string.login_message),
                 fontSize = 14.sp,
                 color = Color(0xFF795548),
                 textAlign = TextAlign.Center
@@ -68,7 +69,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text(stringResource(R.string.email)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -80,7 +81,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Contraseña") },
+                        label = { Text(stringResource(R.string.password)) },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -98,7 +99,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033))
                     ) {
-                        Text("Ingresar", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                        Text(stringResource(R.string.login), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     }
 
                     OutlinedButton(
@@ -110,7 +111,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF5C4033))
                     ) {
-                        Text("Registrarse", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                        Text(stringResource(R.string.signup), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     }
 
                     when (authState) {
@@ -119,7 +120,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                             color = Color(0xFF5C4033)
                         )
                         is AuthState.Error -> Text(
-                            text = (authState as AuthState.Error).message,
+                            text = (authState as AuthState.Error).message, // <-- Aquí Colocar Mensaje de error
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()

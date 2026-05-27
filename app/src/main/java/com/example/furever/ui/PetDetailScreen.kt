@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
-
+import com.example.furever.R
 @Composable
 fun PetDetailScreen(
     pet: PetPost,
@@ -36,16 +37,15 @@ fun PetDetailScreen(
             containerColor = Color.White,
             title = {
                 Text(
-                    "¿Adoptás a ${pet.name}?",
+                    stringResource(R.string.adopt_modal,pet.name),
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF3E2723),
                     fontSize = 18.sp
                 )
             },
             text = {
-                Text(
-                    "Esta acción marcará a ${pet.name} como adoptado/a. " +
-                            "¿Estás seguro/a de que querés continuar?",
+                Text(stringResource(R.string.adopt_modal_message,pet.name)
+                    ,
                     color = Color(0xFF616161),
                     lineHeight = 22.sp
                 )
@@ -59,12 +59,12 @@ fun PetDetailScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text("Sí, adoptar", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.adopt_modal_confirm), fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) {
-                    Text("Cancelar", color = Color(0xFF9E9E9E))
+                    Text(stringResource(R.string.cancel), color = Color(0xFF9E9E9E))
                 }
             }
         )
@@ -103,7 +103,7 @@ fun PetDetailScreen(
                     color = if (isAvailable) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
                 ) {
                     Text(
-                        if (isAvailable) "Disponible" else "Adoptado",
+                        if (isAvailable) stringResource(R.string.available) else stringResource(R.string.adopted),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         fontWeight = FontWeight.Medium,
                         color = if (isAvailable) Color(0xFF388E3C) else Color(0xFFC62828)
@@ -118,12 +118,12 @@ fun PetDetailScreen(
             HorizontalDivider(color = Color(0xFFD7CCC8))
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Sobre ${pet.name}", fontWeight = FontWeight.SemiBold, color = Color(0xFF5C4033))
+            Text(stringResource(R.string.about,pet.name), fontWeight = FontWeight.SemiBold, color = Color(0xFF5C4033))
             Spacer(modifier = Modifier.height(8.dp))
             Text(pet.description, color = Color(0xFF616161), lineHeight = 22.sp)
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Publicado por: ${pet.ownerId}", fontSize = 13.sp, color = Color(0xFFBCAAA4))
+            Text(stringResource(R.string.published_by,pet.ownerId), fontSize = 13.sp, color = Color(0xFFBCAAA4))
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -136,11 +136,11 @@ fun PetDetailScreen(
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033))
                 ) {
-                    Text("Adoptar esta mascota", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    Text(stringResource(R.string.adopt_button), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 }
             } else {
                 Text(
-                    "Esta mascota ya encontró su hogar",
+                    stringResource(R.string.adopt_button_disabled),
                     color = Color(0xFF9E9E9E),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,

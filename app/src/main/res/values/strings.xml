@@ -1,3 +1,48 @@
 <resources>
-    <string name="app_name">furever</string>
+    <string name="app_name" translatable="false">furever</string>
+    <!-- Login screen -->
+    <string name="login_message">Encontrá tu compañero ideal</string>
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Ingresar</string>
+    <string name="signup">Registrarse</string>
+    <string name="error_message">Error</string>
+    <!--PetDetailScreen-->
+    <string name="adopt_modal">¿Adoptás a %1$s?</string>
+    <string name="adopt_modal_message">Esta acción marcará a %1$s como adoptado/a.¿Estás seguro/a de que querés continuar?</string>
+    <string name="adopt_modal_confirm">Sí, adoptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="available">Disponible</string>
+    <string name="adopted">Adoptado</string>
+    <string name="about">Sobre %1$s</string>
+    <string name="published_by">Publicado por: %1$s</string>
+    <string name="adopt_button">Adoptar esta mascota</string>
+    <string name="adopt_button_disabled">Esta mascota ya encontró su hogar</string>
+    <!--HomeScreen-->
+    <string name="add_pet">Agregar mascota</string>
+    <!--ProfileScreen-->
+    <!-- Agrega esto en la sección de ProfileScreen -->
+    <string name="settings_language">Idioma de la aplicación</string>
+    <string name="perfil">Mi Perfil</string>
+    <plurals name="published_pets">
+        <item quantity="one">%d mascota publicada</item>
+        <item quantity="other">%d mascotas publicadas</item>
+    </plurals>
+    <string name="plural_available">Disponibles</string>
+    <string name="plural_adopted">Adoptadas</string>
+    <string name="total">Total</string>
+    <string name="my_posts">Mis publicaciones</string>
+    <string name="empty_posts">Todavía no publicaste ninguna mascota</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <!--UploadPetScreen-->
+    <string name="upload_pet_title">Publicar Mascota</string>
+    <string name="pet_data_title">Datos de la mascota</string>
+    <string name="pet_name">Nombre</string>
+    <string name="pet_species">Raza / Especie</string>
+    <string name="pet_description">Descripción</string>
+    <string name="upload_button">Publicar para Adopción</string>
+
+    <string name="language">Idioma</string>
+
+
 </resources>

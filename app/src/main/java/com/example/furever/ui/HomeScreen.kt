@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import com.example.furever.auth.AuthViewModel
 import com.example.furever.viewmodels.PetViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +60,7 @@ fun HomeScreen(
                 contentColor = Color.White,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar mascota")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_pet))
             }
         },
         containerColor = Color(0xFFF5F0EB)
@@ -106,7 +108,7 @@ fun HomeScreen(
                                         Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
                                 ) {
                                     Text(
-                                        pet.adoptedStatus,
+                                        stringResource(R.string.available) /*pet.adoptedStatus ver como cambiar aca*/,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Medium,
@@ -117,7 +119,7 @@ fun HomeScreen(
                             }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                pet.species,
+                                pet.species/*Ver como cambiar aca*/,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color(0xFF795548)
                             )

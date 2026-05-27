@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adopt_button_disabled">This pet has already found its home</string>
+    <string name="add_pet">Add pet</string>
+    <string name="login_message">Find your soulmate</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="signup">SignUp</string>
+    <string name="error_message">Error</string>
+    <string name="adopt_modal">Adopt %1$s?</string>
+    <string name="adopt_modal_message">This will mark %1$s as adopted. Are you sure you want to continue?</string>
+    <string name="adopt_modal_confirm">Yes, adopt</string>
+    <string name="cancel">Cancel</string>
+    <string name="available">Available</string>
+    <string name="adopted">Adopted</string>
+    <string name="about">About %1$s</string>
+    <string name="published_by">Published by %1$s</string>
+    <string name="adopt_button">Adopt this pet</string>
+    <string name="plural_available">Available</string>
+    <string name="plural_adopted">Adopted</string>
+    <string name="total">Total</string>
+    <string name="my_posts">My posts</string>
+    <string name="empty_posts">You haven’t posted any pets yet</string>
+    <string name="sign_out">SignOut</string>
+    <string name="settings_language">App Language</string>
+    <string name="perfil">My Profile</string>
+    <string name="upload_pet_title">Upload Pet</string>
+    <string name="pet_data_title">Pet´s data</string>
+    <string name="pet_name">Name</string>
+    <string name="pet_species">Breed / Species</string>
+    <string name="pet_description">Description</string>
+    <string name="upload_button">Upload for adoption</string>
+
+    <plurals name="published_pets">
+        <item quantity="one">%d published pet</item>
+        <item quantity="other">%d published pets</item>
+    </plurals>
+
+    <string name="language">Language</string>
+</resources>

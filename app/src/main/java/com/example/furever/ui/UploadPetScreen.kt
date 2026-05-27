@@ -11,12 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
-
+import com.example.furever.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
@@ -35,7 +36,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             TopAppBar(
                 title = {
                     Text(
-                        "Publicar Mascota",
+                        stringResource(R.string.upload_pet_title),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp
                     )
@@ -65,7 +66,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             )
 
             Text(
-                "Datos de la mascota",
+                stringResource(R.string.pet_data_title),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color(0xFF5C4033),
                 fontWeight = FontWeight.SemiBold
@@ -74,7 +75,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Nombre") },
+                label = { Text(stringResource(R.string.pet_name)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -86,7 +87,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             OutlinedTextField(
                 value = species,
                 onValueChange = { species = it },
-                label = { Text("Raza / Especie") },
+                label = { Text(stringResource(R.string.pet_species)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -98,7 +99,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Descripción") },
+                label = { Text(stringResource(R.string.pet_description)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
@@ -135,7 +136,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                 enabled = name.isNotBlank() && species.isNotBlank()
             ) {
                 Text(
-                    "Publicar para Adopción",
+                    stringResource(R.string.upload_button),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp
                 )

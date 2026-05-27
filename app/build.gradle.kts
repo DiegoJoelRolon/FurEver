@@ -67,6 +67,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.androidx.appcompat)
 
     // Testing
     testImplementation(libs.junit)
@@ -86,4 +87,6 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material-icons-extended")
+
+    implementation("com.google.android.material:material:1.12.0")
 }

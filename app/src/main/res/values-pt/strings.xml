@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="adopt_button_disabled">Este pet já encontrou um lar</string>
+    <string name="add_pet">Adicionar pet</string>
+    <string name="login_message">Encontre seu companheiro idea</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="login">Entrar</string>
+    <string name="signup">Registrar</string>
+    <string name="error_message">Erro</string>
+    <string name="adopt_modal">Você adota %1$s?</string>
+    <string name="adopt_modal_message">Esta ação marcará %1$s como adotado(a). Tem certeza de que deseja continuar?</string>
+    <string name="adopt_modal_confirm">Sim, adotar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="available">Disponível</string>
+    <string name="adopted">Adotado</string>
+    <string name="about">Sobre %1$s</string>
+    <string name="published_by">Publicado por: %1$s</string>
+    <string name="adopt_button">Adotar este pet</string>
+    <string name="plural_available">Disponíveis</string>
+    <string name="plural_adopted">Adotadas</string>
+    <string name="total">Total</string>
+    <string name="my_posts">Minhas publicações</string>
+    <string name="empty_posts">Você ainda não publicou nenhum pet</string>
+    <string name="sign_out">Sair</string>
+    <string name="upload_pet_title">Publicar pet</string>
+    <string name="pet_data_title">Dados do pet</string>
+    <string name="pet_name">Nome</string>
+    <string name="pet_species">Raça / Espécie</string>
+    <string name="pet_description">Descrição</string>
+    <string name="upload_button">Publicar para adoção</string>
+
+    <plurals name="published_pets">
+        <item quantity="one">%d animal de estimação publicado</item>
+        <item quantity="other">%d animais de estimação publicados</item>
+    </plurals>
+    <string name="settings_language">Idioma do aplicativo</string>
+    <string name="perfil">Meu perfil</string>
+
+    <string name="language">Idioma</string>
+</resources>
