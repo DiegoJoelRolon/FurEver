@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.res.stringResource
+import com.example.furever.R
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel) {
@@ -53,7 +55,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                                         contentDescription = "Inicio"
                                     )
                                 },
-                                label = { Text("Inicio") },
+                                label = { Text(stringResource(R.string.home_button)) },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = Color(0xFF5C4033),
                                     selectedTextColor = Color(0xFF5C4033),
@@ -71,7 +73,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                                         contentDescription = "Perfil"
                                     )
                                 },
-                                label = { Text("Perfil") },
+                                label = { Text(stringResource(R.string.profile_button)) },
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = Color(0xFF5C4033),
                                     selectedTextColor = Color(0xFF5C4033),

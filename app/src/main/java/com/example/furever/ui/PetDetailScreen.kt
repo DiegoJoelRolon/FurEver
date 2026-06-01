@@ -131,9 +131,9 @@ fun PetDetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (pet.gender.isNotEmpty())   DetailChip(label = "Género",  value = pet.gender)
-                if (pet.ageGroup.isNotEmpty()) DetailChip(label = "Edad",    value = pet.ageGroup)
-                if (pet.size.isNotEmpty())     DetailChip(label = "Tamaño",  value = pet.size)
+                if (pet.gender.isNotEmpty())   DetailChip(label = stringResource(R.string.pet_gender),  value =getTranslation(pet.gender))
+                if (pet.ageGroup.isNotEmpty()) DetailChip(label = stringResource(R.string.pet_age),    value = getTranslation(pet.ageGroup))
+                if (pet.size.isNotEmpty())     DetailChip(label = stringResource(R.string.pet_size),  value = getTranslation(pet.size))
             }
 
             if (pet.city.isNotEmpty()) {
@@ -144,7 +144,7 @@ fun PetDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = Color(0xFFD7CCC8))
             Spacer(modifier = Modifier.height(16.dp))
-            Text(pet.species, fontSize = 16.sp, color = Color(0xFF795548), fontWeight = FontWeight.Medium)
+            Text(getTranslation(pet.species), fontSize = 16.sp, color = Color(0xFF795548), fontWeight = FontWeight.Medium)
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = Color(0xFFD7CCC8))
@@ -198,4 +198,26 @@ private fun DetailChip(label: String, value: String) {
             Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF5C4033))
         }
     }
+}
+
+@Composable
+fun getTranslation(value: String): String {
+    val resId = when (value.trim()) {
+        "Perro" -> R.string.search_dog
+        "Gato" -> R.string.search_cat
+        "Otro" -> R.string.search_other
+        "Macho" -> R.string.male_option
+        "Hembra" -> R.string.female_option
+        "Pequeño" -> R.string.little_size_option
+        "Mediano" -> R.string.medium_size_option
+        "Grande" -> R.string.big_size_option
+        "Cachorro" -> R.string.puppy_age_option
+        "Joven" -> R.string.young_age_option
+        "Adulto" -> R.string.adult_age_option
+        "Senior" -> R.string.senior_age_option
+        "Disponible" -> R.string.available
+        "Adoptado" -> R.string.adopted
+        else -> null
+    }
+    return resId?.let { stringResource(it) } ?: value
 }

@@ -23,13 +23,21 @@
     <string name="my_posts">My posts</string>
     <string name="empty_posts">You haven’t posted any pets yet</string>
     <string name="sign_out">SignOut</string>
+    <string name="search_other">Other</string>
+    <string name="search_hint">Search by name, breed or city</string>
+    <string name="profile_button">Profile</string>
+    <string name="home_button">Feed</string>
     <string name="settings_language">App Language</string>
     <string name="perfil">My Profile</string>
     <string name="upload_pet_title">Upload Pet</string>
-    <string name="pet_data_title">Pet´s data</string>
+    <string name="basic_data">Basic data</string>
     <string name="pet_name">Name</string>
-    <string name="pet_species">Breed / Species</string>
+    <string name="pet_breed">Race (Optional)</string>
+    <string name="pet_species">Specie</string>
+    <string name="pet_age">Age</string>
     <string name="pet_description">Description</string>
+    <string name="female_option">Female</string>
+    <string name="senior_age_option">Senior</string>
     <string name="upload_button">Upload for adoption</string>
 
     <plurals name="published_pets">
@@ -38,4 +46,20 @@
     </plurals>
 
     <string name="language">Language</string>
+    <string name="search_all">All</string>
+    <string name="search_dog">Dog</string>
+    <string name="search_cat">Cat</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="add_photo_hint">Touch to add a photo</string>
+    <string name="pet_gender">Gender</string>
+    <string name="pet_size">Size</string>
+    <string name="pet_photo">Pet´s Photo</string>
+    <string name="male_option">Male</string>
+    <string name="little_size_option">Little</string>
+    <string name="medium_size_option">Medium</string>
+    <string name="big_size_option">Big</string>
+    <string name="puppy_age_option">Puppy</string>
+    <string name="young_age_option">Young</string>
+    <string name="adult_age_option">Adult</string>
 </resources>

@@ -20,6 +20,13 @@
     <string name="adopt_button_disabled">Esta mascota ya encontró su hogar</string>
     <!--HomeScreen-->
     <string name="add_pet">Agregar mascota</string>
+    <string name="search_all">Todas</string>
+    <string name="search_dog">Perro </string>
+    <string name="search_cat">Gato</string>
+    <string name="search_other">Otro</string>
+    <string name="search_hint">Busca por nombre, raza o ciudad…</string>
+    <string name="profile_button">Perfil</string>
+    <string name="home_button">Inicio</string>
     <!--ProfileScreen-->
     <!-- Agrega esto en la sección de ProfileScreen -->
     <string name="settings_language">Idioma de la aplicación</string>
@@ -36,10 +43,27 @@
     <string name="sign_out">Cerrar sesión</string>
     <!--UploadPetScreen-->
     <string name="upload_pet_title">Publicar Mascota</string>
-    <string name="pet_data_title">Datos de la mascota</string>
+    <string name="pet_photo">Foto de la mascota</string>
+    <string name="choose_from_gallery">Elegir de la galería</string>
+    <string name="change_photo">Cambiar foto</string>
+    <string name="add_photo_hint">Tocá para agregar una foto</string>
+    <string name="basic_data">Datos básicos</string>
     <string name="pet_name">Nombre</string>
-    <string name="pet_species">Raza / Especie</string>
+    <string name="pet_breed">Raza (Opcional)</string>
+    <string name="pet_species">Especie</string>
+    <string name="pet_gender">Género</string>
+    <string name="pet_size">Tamaño</string>
+    <string name="pet_age">Edad</string>
     <string name="pet_description">Descripción</string>
+    <string name="male_option">Macho</string>
+    <string name="female_option">Hembra</string>
+    <string name="little_size_option">Pequeño</string>
+    <string name="medium_size_option">Mediano</string>
+    <string name="big_size_option">Grande</string>
+    <string name="puppy_age_option">Cachorro</string>
+    <string name="young_age_option">Joven</string>
+    <string name="adult_age_option">Adulto</string>
+    <string name="senior_age_option">Senior</string>
     <string name="upload_button">Publicar para Adopción</string>
 
     <string name="language">Idioma</string>

@@ -24,18 +24,42 @@
     <string name="empty_posts">Você ainda não publicou nenhum pet</string>
     <string name="sign_out">Sair</string>
     <string name="upload_pet_title">Publicar pet</string>
-    <string name="pet_data_title">Dados do pet</string>
+    <string name="basic_data">"Dados básicos "</string>
     <string name="pet_name">Nome</string>
+    <string name="pet_breed">Corrida (Opcional)</string>
     <string name="pet_species">Raça / Espécie</string>
+    <string name="pet_age">idade</string>
     <string name="pet_description">Descrição</string>
+    <string name="female_option">Fêmea</string>
+    <string name="senior_age_option">sênior</string>
     <string name="upload_button">Publicar para adoção</string>
 
     <plurals name="published_pets">
         <item quantity="one">%d animal de estimação publicado</item>
         <item quantity="other">%d animais de estimação publicados</item>
     </plurals>
+    <string name="search_other">Otro</string>
+    <string name="search_hint">Busca por nombre, raza o ciudad...</string>
+    <string name="profile_button">Perfil</string>
+    <string name="home_button">Feed</string>
     <string name="settings_language">Idioma do aplicativo</string>
     <string name="perfil">Meu perfil</string>
 
     <string name="language">Idioma</string>
+    <string name="search_all">Todas</string>
+    <string name="search_dog">Cão</string>
+    <string name="search_cat">Gato</string>
+    <string name="choose_from_gallery">" Escolha na galeria"</string>
+    <string name="change_photo">" Alterar foto"</string>
+    <string name="add_photo_hint">" Toque para adicionar uma foto"</string>
+    <string name="pet_photo">Foto de pet</string>
+    <string name="pet_gender">Gênero</string>
+    <string name="pet_size">tamanho</string>
+    <string name="male_option">Macho</string>
+    <string name="little_size_option">Pequeno</string>
+    <string name="medium_size_option">Médio</string>
+    <string name="big_size_option">Grande</string>
+    <string name="puppy_age_option">Filhote</string>
+    <string name="young_age_option">Jovem</string>
+    <string name="adult_age_option">Adulto</string>
 </resources>

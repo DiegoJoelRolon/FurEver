@@ -68,6 +68,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.compose.ui.test)
 
     // Testing
     testImplementation(libs.junit)
@@ -92,4 +93,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     implementation("com.google.android.material:material:1.12.0")
+
+    //Cloudinary
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 }

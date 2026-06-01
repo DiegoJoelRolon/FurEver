@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,12 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
+import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +82,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             shape = RoundedCornerShape(20.dp),
             containerColor = Color.White,
             title = {
-                Text("Foto de la mascota", fontWeight = FontWeight.Bold, color = Color(0xFF3E2723))
+                Text(stringResource(R.string.pet_photo), fontWeight = FontWeight.Bold, color = Color(0xFF3E2723))
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -92,7 +95,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) { Text("Elegir de la galería") }
+                    ) { Text(stringResource(R.string.choose_from_gallery)) }
 
                     OutlinedButton(
                         onClick = {
@@ -118,7 +121,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Publicar Mascota", fontWeight = FontWeight.SemiBold, fontSize = 20.sp) },
+                title = { Text(stringResource(R.string.upload_pet_title), fontWeight = FontWeight.SemiBold, fontSize = 20.sp) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF5C4033),
                     titleContentColor = Color.White
@@ -137,7 +140,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(4.dp))
 
             // ── Foto ──────────────────────────────────────────────────────
-            SectionTitle("Foto de la mascota")
+            SectionTitle(stringResource(R.string.pet_photo))
 
             Box(
                 modifier = Modifier
@@ -166,14 +169,14 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                             .background(Color(0xCC5C4033))
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Text("Cambiar foto", color = Color.White, fontSize = 12.sp)
+                        Text(stringResource(R.string.change_photo), color = Color.White, fontSize = 12.sp)
                     }
                 } else {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("📷", fontSize = 40.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "Tocá para agregar una foto",
+                            stringResource(R.string.add_photo_hint),
                             color = Color(0xFF9E9E9E),
                             fontSize = 14.sp
                         )
@@ -182,53 +185,73 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             }
 
             // ── Datos básicos ─────────────────────────────────────────────
-            SectionTitle("Datos básicos")
+            SectionTitle(stringResource(R.string.basic_data))
 
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                label = { Text("Nombre *") },
+                label = { Text(stringResource(R.string.pet_name)+" *") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp), colors = fieldColors()
             )
             OutlinedTextField(
                 value = breed, onValueChange = { breed = it },
-                label = { Text("Raza (opcional)") },
+                label = { Text(stringResource(R.string.pet_breed)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp), colors = fieldColors()
             )
             OutlinedTextField(
                 value = description, onValueChange = { description = it },
-                label = { Text("Descripción") },
+                label = { Text(stringResource(R.string.pet_description)) },
                 modifier = Modifier.fillMaxWidth().height(110.dp),
                 shape = RoundedCornerShape(12.dp), maxLines = 4, colors = fieldColors()
             )
 
             // ── Especie ───────────────────────────────────────────────────
-            SectionTitle("Especie *")
+            SectionTitle(stringResource(R.string.pet_species)+" *")
+            val speciesOptions = listOf(
+                "Perro" to stringResource(R.string.search_dog),
+                "Gato" to stringResource(R.string.search_cat),
+                "Otro" to stringResource(R.string.search_other))
             ChipGroup(
-                options = listOf("Perro", "Gato", "Otro"),
-                selected = selectedSpecies, onSelect = { selectedSpecies = it }
+                options = speciesOptions,
+                selected = selectedSpecies,
+                onSelect = { selectedSpecies = it }
             )
 
             // ── Género ────────────────────────────────────────────────────
-            SectionTitle("Género *")
+            SectionTitle(stringResource(R.string.pet_gender)+" *")
+            val genderOptions = listOf(
+                "Macho" to stringResource(R.string.male_option),
+                "Hembra" to stringResource(R.string.female_option))
             ChipGroup(
-                options = listOf("Macho", "Hembra"),
-                selected = selectedGender, onSelect = { selectedGender = it }
+                options = genderOptions,
+                selected = selectedGender,
+                onSelect = { selectedGender = it }
             )
 
             // ── Tamaño ────────────────────────────────────────────────────
-            SectionTitle("Tamaño *")
+            SectionTitle(stringResource(R.string.pet_size) + " *")
+            val sizeOptions = listOf(
+                "Pequeño" to stringResource(R.string.little_size_option),
+                "Mediano" to stringResource(R.string.medium_size_option),
+                "Grande" to stringResource(R.string.big_size_option),
+                "Senior" to stringResource(R.string.senior_age_option))
             ChipGroup(
-                options = listOf("Pequeño", "Mediano", "Grande"),
-                selected = selectedSize, onSelect = { selectedSize = it }
+                options = sizeOptions,
+                selected = selectedSize,
+                onSelect = { selectedSize = it }
             )
 
             // ── Edad ──────────────────────────────────────────────────────
-            SectionTitle("Edad *")
+            SectionTitle(stringResource(R.string.pet_age)+" *")
+            val ageGroupOptions = listOf(
+                "Cachorro" to stringResource(R.string.puppy_age_option),
+                "Joven" to stringResource(R.string.young_age_option),
+                "Adulto" to stringResource(R.string.adult_age_option))
             ChipGroup(
-                options = listOf("Cachorro", "Joven", "Adulto", "Senior"),
-                selected = selectedAgeGroup, onSelect = { selectedAgeGroup = it }
+                options = ageGroupOptions,
+                selected = selectedAgeGroup,
+                onSelect = { selectedAgeGroup = it }
             )
 
             // ── Botón publicar ────────────────────────────────────────────
@@ -242,10 +265,10 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                         size        = selectedSize,
                         ageGroup    = selectedAgeGroup,
                         description = description,
-                        imageUrl    = imageUri?.toString() ?: "",
+                        imageUrl    = "",
                         timestamp   = System.currentTimeMillis()
                     )
-                    petViewModel.uploadPet(post, imageUri)
+                    petViewModel.uploadPet(context,post, imageUri)
                     onPostSuccess()
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -256,7 +279,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                 ),
                 enabled = isFormValid
             ) {
-                Text("Publicar para adopción", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(stringResource(R.string.upload_button), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -278,16 +301,23 @@ private fun SectionTitle(text: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChipGroup(options: List<String>, selected: String, onSelect: (String) -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        options.forEach { option ->
-            val isSelected = selected == option
+private fun ChipGroup(
+    options: List<Pair<String, String>>, // Primer String es el valor real, segundo es la etiqueta
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()) // Añadido scroll por si las traducciones son largas
+    ) {
+        options.forEach { (value, label) ->
+            val isSelected = selected == value
             FilterChip(
                 selected = isSelected,
-                onClick = { onSelect(option) },
+                onClick = { onSelect(value) },
                 label = {
                     Text(
-                        option, fontSize = 13.sp,
+                        label, fontSize = 13.sp,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                     )
                 },
@@ -305,7 +335,6 @@ private fun ChipGroup(options: List<String>, selected: String, onSelect: (String
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(

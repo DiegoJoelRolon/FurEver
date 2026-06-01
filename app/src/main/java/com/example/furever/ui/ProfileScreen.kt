@@ -427,6 +427,7 @@ fun ProfileScreen(
 
 // ── Componentes privados ──────────────────────────────────────────────────────
 
+
 @Composable
 private fun StatCard(
     label: String,
@@ -485,7 +486,7 @@ private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
                     fontSize = 16.sp,
                     color = Color(0xFF3E2723)
                 )
-                Text(pet.species, fontSize = 13.sp, color = Color(0xFF795548))
+                Text(getTranslation(pet.species), fontSize = 13.sp, color = Color(0xFF795548))
                 if (!pet.city.isNullOrEmpty()) {
                     Text(
                         "📍 ${pet.city}",
@@ -525,3 +526,4 @@ private fun createCameraUri(context: Context): Uri {
         file
     )
 }
+
