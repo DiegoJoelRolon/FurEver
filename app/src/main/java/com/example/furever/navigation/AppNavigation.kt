@@ -88,7 +88,16 @@ fun AppNavigation(authViewModel: AuthViewModel) {
             startDestination = Routes.LOGIN,
             modifier = Modifier.padding(paddingValues)) {
             composable(Routes.LOGIN) {
-                LoginScreen(authViewModel)
+                LoginScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToRegister = { navController.navigate(Routes.REGISTER) }
+                )
+            }
+            composable(Routes.REGISTER) {
+                RegisterScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToLogin = { navController.popBackStack() }
+                )
             }
             composable(Routes.HOME) {
                 HomeScreen(

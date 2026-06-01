@@ -112,6 +112,38 @@ fun PetDetailScreen(
             }
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            // Especie + raza
+            Text(
+                buildString {
+                    append(pet.species)
+                    if (pet.breed.isNotEmpty()) append(" · ${pet.breed}")
+                },
+                fontSize = 16.sp,
+                color = Color(0xFF795548),
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Chips de atributos
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (pet.gender.isNotEmpty())   DetailChip(label = "Género",  value = pet.gender)
+                if (pet.ageGroup.isNotEmpty()) DetailChip(label = "Edad",    value = pet.ageGroup)
+                if (pet.size.isNotEmpty())     DetailChip(label = "Tamaño",  value = pet.size)
+            }
+
+            if (pet.city.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("📍 ${pet.city}", fontSize = 13.sp, color = Color(0xFF9E9E9E))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(color = Color(0xFFD7CCC8))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(pet.species, fontSize = 16.sp, color = Color(0xFF795548), fontWeight = FontWeight.Medium)
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -147,6 +179,23 @@ fun PetDetailScreen(
                     fontSize = 15.sp
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DetailChip(label: String, value: String) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = Color(0xFFEDE0D4)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(label, fontSize = 10.sp, color = Color(0xFF9E9E9E))
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF5C4033))
         }
     }
 }

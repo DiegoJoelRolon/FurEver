@@ -9,4 +9,5 @@ object Routes {
 
     const val PET_DETAIL = "pet_detail/{petId}"
     const val PROFILE = "profile"
+    const val REGISTER = "register"
 }

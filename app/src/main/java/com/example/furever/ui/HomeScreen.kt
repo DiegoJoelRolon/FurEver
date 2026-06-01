@@ -6,9 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -19,11 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.furever.R
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.viewmodels.PetViewModel
-import java.text.SimpleDateFormat
-import java.util.*
-import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,14 +38,8 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "FurEver 🐾",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                },
-                    colors = TopAppBarDefaults.topAppBarColors(
+                title = { Text("FurEver 🐾", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF5C4033),
                     titleContentColor = Color.White
                 )
@@ -91,10 +83,11 @@ fun HomeScreen(
                                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                             contentScale = ContentScale.Crop
                         )
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(14.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     pet.name,
@@ -108,7 +101,7 @@ fun HomeScreen(
                                         Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
                                 ) {
                                     Text(
-                                        stringResource(R.string.available) /*pet.adoptedStatus ver como cambiar aca*/,
+                                        pet.adoptedStatus,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Medium,
@@ -117,23 +110,50 @@ fun HomeScreen(
                                     )
                                 }
                             }
+
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                pet.species/*Ver como cambiar aca*/,
-                                style = MaterialTheme.typography.bodyMedium,
+                                buildString {
+                                    append(pet.species)
+                                    if (pet.breed.isNotEmpty()) append(" · ${pet.breed}")
+                                },
+                                fontSize = 13.sp,
                                 color = Color(0xFF795548)
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                pet.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF9E9E9E),
-                                maxLines = 2
-                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                if (pet.gender.isNotEmpty())   PetChip(pet.gender)
+                                if (pet.ageGroup.isNotEmpty()) PetChip(pet.ageGroup)
+                                if (pet.size.isNotEmpty())     PetChip(pet.size)
+                            }
+
+                            if (pet.city.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text("📍 ${pet.city}", fontSize = 12.sp, color = Color(0xFF9E9E9E))
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+// ── Al final del archivo ──────────────────────────────────────────────────────
+
+@Composable
+private fun PetChip(label: String) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Color(0xFFF5F0EB)
+    ) {
+        Text(
+            label,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            fontSize = 11.sp,
+            color = Color(0xFF5C4033),
+            fontWeight = FontWeight.Medium
+        )
     }
 }

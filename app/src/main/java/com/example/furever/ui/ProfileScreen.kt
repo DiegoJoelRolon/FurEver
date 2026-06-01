@@ -1,8 +1,13 @@
 package com.example.furever.ui
 
-import android.app.Activity
-import androidx.appcompat.app.AppCompatDelegate
+import android.Manifest
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.furever.R
@@ -32,8 +36,6 @@ import com.example.furever.auth.AuthViewModel
 import com.example.furever.models.PetPost
 import com.example.furever.utils.LanguageManager
 import com.example.furever.viewmodels.PetViewModel
-import com.google.firebase.auth.FirebaseAuth
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,19 +45,118 @@ fun ProfileScreen(
     onNavigateToPetDetail: (String) -> Unit,
     onSignOut: () -> Unit
 ) {
-    val currentUser = FirebaseAuth.getInstance().currentUser
-    val email      = currentUser?.email ?: "Usuario"
-    val initials   = email.take(2).uppercase()
+    val context = LocalContext.current
 
+    // ── Datos del usuario ─────────────────────────────────────────────────
+    val currentUserProfile by authViewModel.currentUser.collectAsStateWithLifecycle()
+    val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+    val email = firebaseUser?.email ?: "Usuario"
+    val displayName = when {
+        !currentUserProfile?.name.isNullOrEmpty() ->
+            "${currentUserProfile?.name} ${currentUserProfile?.lastname ?: ""}".trim()
+        else -> email
+    }
+    val initials = when {
+        !currentUserProfile?.name.isNullOrEmpty() ->
+            "${currentUserProfile?.name?.first()}${currentUserProfile?.lastname?.firstOrNull() ?: ""}".uppercase()
+        else -> email.take(2).uppercase()
+    }
+
+    // ── Mascotas ──────────────────────────────────────────────────────────
     val allPets by petViewModel.pets.collectAsStateWithLifecycle()
     val myPets = allPets.filter { it.ownerId == email }
+    val disponibles = myPets.count { it.adoptedStatus == "Disponible" }
+    val adoptadas = myPets.count { it.adoptedStatus != "Disponible" }
 
-    // Estado del dropdown
-    var expanded       by remember { mutableStateOf(false) }
-    var selectedCode   by remember { mutableStateOf(LanguageManager.getCurrentLanguageCode()) }
-    val selectedLabel  = LanguageManager.supportedLanguages.entries
+    // ── Idioma ────────────────────────────────────────────────────────────
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCode by remember { mutableStateOf(LanguageManager.getCurrentLanguageCode()) }
+    val selectedLabel = LanguageManager.supportedLanguages.entries
         .firstOrNull { it.value == selectedCode }?.key ?: selectedCode
 
+    // ── Foto de perfil ────────────────────────────────────────────────────
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+    var showImageOptions by remember { mutableStateOf(false) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { authViewModel.updateProfileImage(it, context) }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraImageUri?.let { authViewModel.updateProfileImage(it, context) }
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createCameraUri(context)
+            cameraImageUri = uri
+            cameraLauncher.launch(uri)
+        }
+    }
+
+    // ── Dialog foto ───────────────────────────────────────────────────────
+    if (showImageOptions) {
+        AlertDialog(
+            onDismissRequest = { showImageOptions = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = Color.White,
+            title = {
+                Text(
+                    "Foto de perfil",
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF3E2723)
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedButton(
+                        onClick = {
+                            showImageOptions = false
+                            galleryLauncher.launch("image/*")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF5C4033)
+                        ),
+                        border = BorderStroke(1.5.dp, Color(0xFF5C4033))
+                    ) {
+                        Text("Elegir de la galería")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            showImageOptions = false
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF5C4033)
+                        ),
+                        border = BorderStroke(1.5.dp, Color(0xFF5C4033))
+                    ) {
+                        Text("Sacar una foto")
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showImageOptions = false }) {
+                    Text("Cancelar", color = Color(0xFF9E9E9E))
+                }
+            }
+        )
+    }
+
+    // ── UI principal ──────────────────────────────────────────────────────
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,39 +188,88 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0xFF5C4033))
-                        .padding(top = 16.dp, bottom = 32.dp),
+                        .padding(top = 24.dp, bottom = 36.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Avatar clickeable
                     Box(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(88.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFD7CCC8)),
+                            .background(Color(0xFFD7CCC8))
+                            .clickable { showImageOptions = true },
                         contentAlignment = Alignment.Center
                     ) {
+                        val profileUrl = currentUserProfile?.profileImageUrl
+                        if (!profileUrl.isNullOrEmpty()) {
+                            AsyncImage(
+                                model = profileUrl,
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Text(
+                                initials,
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF5C4033)
+                            )
+                        }
+                        // Ícono de edición
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .size(26.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF3E2723)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("✎", fontSize = 13.sp, color = Color.White)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Nombre si existe, si no el email
+                    Text(
+                        displayName,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    if (displayName != email) {
                         Text(
-                            initials,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF5C4033)
+                            email,
+                            color = Color(0xFFD7CCC8),
+                            fontSize = 13.sp
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(email, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp)
+
                     Spacer(modifier = Modifier.height(4.dp))
+
+                    // Ciudad si existe
+                    if (!currentUserProfile?.city.isNullOrEmpty()) {
+                        Text(
+                            "📍 ${currentUserProfile?.city}",
+                            color = Color(0xFFD7CCC8),
+                            fontSize = 13.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+
                     Text(
                         pluralStringResource(R.plurals.published_pets, myPets.size, myPets.size),
                         color = Color(0xFFD7CCC8),
                         fontSize = 13.sp
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
             // ── Stats ─────────────────────────────────────────────────────
             item {
-                val disponibles = myPets.count { it.adoptedStatus == "Disponible" }
-                val adoptadas   = myPets.count { it.adoptedStatus != "Disponible" }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -128,21 +278,21 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     StatCard(
-                        label    = stringResource(R.string.plural_available),
-                        value    = disponibles.toString(),
-                        color    = Color(0xFF388E3C),
+                        label = stringResource(R.string.plural_available),
+                        value = disponibles.toString(),
+                        color = Color(0xFF388E3C),
                         modifier = Modifier.weight(1f)
                     )
                     StatCard(
-                        label    = stringResource(R.string.plural_adopted),
-                        value    = adoptadas.toString(),
-                        color    = Color(0xFFC62828),
+                        label = stringResource(R.string.plural_adopted),
+                        value = adoptadas.toString(),
+                        color = Color(0xFFC62828),
                         modifier = Modifier.weight(1f)
                     )
                     StatCard(
-                        label    = stringResource(R.string.total),
-                        value    = myPets.size.toString(),
-                        color    = Color(0xFF5C4033),
+                        label = stringResource(R.string.total),
+                        value = myPets.size.toString(),
+                        color = Color(0xFF5C4033),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -190,12 +340,11 @@ fun ProfileScreen(
                                 .fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor   = Color(0xFF5C4033),
+                                focusedBorderColor = Color(0xFF5C4033),
                                 unfocusedBorderColor = Color(0xFF9E9E9E),
-                                focusedLabelColor    = Color(0xFF5C4033)
+                                focusedLabelColor = Color(0xFF5C4033)
                             )
                         )
-
                         ExposedDropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
@@ -207,14 +356,12 @@ fun ProfileScreen(
                                         selectedCode = code
                                         expanded = false
                                         LanguageManager.setLanguage(code)
-                                        // La Activity se recrea sola con el nuevo idioma ✓
                                     }
                                 )
                             }
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -253,7 +400,7 @@ fun ProfileScreen(
             // ── Cards de mascotas ─────────────────────────────────────────
             items(myPets) { pet ->
                 MyPetCard(
-                    pet     = pet,
+                    pet = pet,
                     onClick = { onNavigateToPetDetail(pet.id) }
                 )
             }
@@ -269,7 +416,7 @@ fun ProfileScreen(
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFC62828)),
-                    border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFC62828))
+                    border = BorderStroke(1.5.dp, Color(0xFFC62828))
                 ) {
                     Text(stringResource(R.string.sign_out), fontWeight = FontWeight.SemiBold)
                 }
@@ -278,7 +425,7 @@ fun ProfileScreen(
     }
 }
 
-// ── Componentes privados ─────────────────────────────────────────────────────
+// ── Componentes privados ──────────────────────────────────────────────────────
 
 @Composable
 private fun StatCard(
@@ -288,14 +435,16 @@ private fun StatCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier  = modifier,
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier             = Modifier.padding(vertical = 16.dp).fillMaxWidth(),
-            horizontalAlignment  = Alignment.CenterHorizontally
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
             Spacer(modifier = Modifier.height(2.dp))
@@ -308,26 +457,42 @@ private fun StatCard(
 private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
     val isAvailable = pet.adoptedStatus == "Disponible"
     Card(
-        modifier  = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
-        shape     = RoundedCornerShape(14.dp),
-        onClick   = onClick,
-        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(14.dp),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
-            modifier          = Modifier.padding(12.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model            = pet.imageUrl,
+                model = pet.imageUrl,
                 contentDescription = pet.name,
-                modifier         = Modifier.size(72.dp).clip(RoundedCornerShape(10.dp)),
-                contentScale     = ContentScale.Crop
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(pet.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF3E2723))
+                Text(
+                    pet.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF3E2723)
+                )
                 Text(pet.species, fontSize = 13.sp, color = Color(0xFF795548))
+                if (!pet.city.isNullOrEmpty()) {
+                    Text(
+                        "📍 ${pet.city}",
+                        fontSize = 12.sp,
+                        color = Color(0xFF9E9E9E)
+                    )
+                }
                 Spacer(modifier = Modifier.height(6.dp))
                 Surface(
                     shape = RoundedCornerShape(20.dp),
@@ -335,7 +500,7 @@ private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
                 ) {
                     Text(
                         if (isAvailable) stringResource(R.string.available)
-                        else             stringResource(R.string.adopted),
+                        else stringResource(R.string.adopted),
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
@@ -345,4 +510,18 @@ private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
             }
         }
     }
+}
+
+// ── Helper fuera del Composable ───────────────────────────────────────────────
+
+private fun createCameraUri(context: Context): Uri {
+    val file = java.io.File(
+        context.cacheDir,
+        "profile_photo_${System.currentTimeMillis()}.jpg"
+    )
+    return androidx.core.content.FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
 }

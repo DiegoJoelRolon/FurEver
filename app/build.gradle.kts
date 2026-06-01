@@ -88,5 +88,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material-icons-extended")
 
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.firebase:firebase-storage")
+
     implementation("com.google.android.material:material:1.12.0")
 }

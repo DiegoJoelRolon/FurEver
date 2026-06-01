@@ -1,5 +1,6 @@
 package com.example.furever.viewmodels
 
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -37,17 +38,35 @@ class PetViewModel: ViewModel() {
     // En uploadPet(), el ownerId ya viene del auth.currentUser?.email
     // Asegurarse que la firma de uploadPet NO recibe ownerId desde afuera:
 
-    fun uploadPet(pet: PetPost) {
+    fun uploadPet(pet: PetPost, imageUri: Uri? = null) {
         val usermail = auth.currentUser?.email ?: "Anónimo"
         val petRef = db.collection("pets").document()
 
-        val newPet = PetPost(
-            id = petRef.id,
-            name = pet.name,
-            species = pet.species,
-            description = pet.description,
-            imageUrl = pet.imageUrl,
-            ownerId = usermail,          // ← siempre desde Auth, nunca del form
+        if (imageUri != null) {
+            // Subir imagen a Firebase Storage primero
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance()
+                .reference.child("pet_images/${petRef.id}.jpg")
+
+            storageRef.putFile(imageUri)
+                .addOnSuccessListener {
+                    storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                        savePet(pet, petRef, usermail, downloadUrl.toString())
+                    }
+                }
+                .addOnFailureListener {
+                    // Si falla la imagen, guardar sin foto
+                    savePet(pet, petRef, usermail, "")
+                }
+        } else {
+            savePet(pet, petRef, usermail, "")
+        }
+    }
+
+    private fun savePet(pet: PetPost, petRef: com.google.firebase.firestore.DocumentReference, usermail: String, imageUrl: String) {
+        val newPet = pet.copy(
+            id       = petRef.id,
+            ownerId  = usermail,
+            imageUrl = imageUrl,
             timestamp = System.currentTimeMillis()
         )
         petRef.set(newPet)

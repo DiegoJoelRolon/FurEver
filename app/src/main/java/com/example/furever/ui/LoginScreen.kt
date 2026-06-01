@@ -18,8 +18,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.furever.auth.AuthState
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.R
+
 @Composable
-fun LoginScreen(authViewModel: AuthViewModel) {
+fun LoginScreen(
+    authViewModel: AuthViewModel,
+    onNavigateToRegister: () -> Unit   //  nuevo
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by authViewModel.authState.collectAsStateWithLifecycle()
@@ -36,10 +40,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                "🐾",
-                fontSize = 56.sp
-            )
+            Text("🐾", fontSize = 56.sp)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "FurEver",
@@ -102,8 +103,9 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                         Text(stringResource(R.string.login), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     }
 
+                    // ← ya no llama a signup, navega a RegisterScreen
                     OutlinedButton(
-                        onClick = { authViewModel.signup(email, password) },
+                        onClick = onNavigateToRegister,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -120,7 +122,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
                             color = Color(0xFF5C4033)
                         )
                         is AuthState.Error -> Text(
-                            text = (authState as AuthState.Error).message, // <-- Aquí Colocar Mensaje de error
+                            text = (authState as AuthState.Error).message,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
