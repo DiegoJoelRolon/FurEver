@@ -26,9 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.furever.R
+import com.example.furever.location.LocationHelper
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
-import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,20 +37,25 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
 
     val context = LocalContext.current
 
-    var name        by remember { mutableStateOf("") }
-    var breed       by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+    var name         by remember { mutableStateOf("") }
+    var breed        by remember { mutableStateOf("") }
+    var description  by remember { mutableStateOf("") }
 
     var selectedSpecies  by remember { mutableStateOf("") }
     var selectedGender   by remember { mutableStateOf("") }
     var selectedSize     by remember { mutableStateOf("") }
     var selectedAgeGroup by remember { mutableStateOf("") }
 
+    // Ubicación
+    var city           by remember { mutableStateOf("") }
+    var latitude       by remember { mutableStateOf(0.0) }
+    var longitude      by remember { mutableStateOf(0.0) }
+    var locationStatus by remember { mutableStateOf("") }
+
     // Foto
     var imageUri        by remember { mutableStateOf<Uri?>(null) }
     var cameraImageUri  by remember { mutableStateOf<Uri?>(null) }
     var showPhotoDialog by remember { mutableStateOf(false) }
-    var uploadedImageUrl by remember { mutableStateOf("") }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -69,28 +75,48 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
         }
     }
 
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            LocationHelper.getCurrentLocation(
+                context = context,
+                onSuccess = { result ->
+                    city = result.city
+                    latitude = result.latitude
+                    longitude = result.longitude
+                    locationStatus = "ok"
+                },
+                onError = { locationStatus = "error" }
+            )
+        } else {
+            locationStatus = "denied"
+        }
+    }
+
     val isFormValid = name.isNotBlank()
             && selectedSpecies.isNotBlank()
             && selectedGender.isNotBlank()
             && selectedSize.isNotBlank()
             && selectedAgeGroup.isNotBlank()
 
-    // Dialog fuente de foto
+    // Dialog foto
     if (showPhotoDialog) {
         AlertDialog(
             onDismissRequest = { showPhotoDialog = false },
             shape = RoundedCornerShape(20.dp),
             containerColor = Color.White,
             title = {
-                Text(stringResource(R.string.pet_photo), fontWeight = FontWeight.Bold, color = Color(0xFF3E2723))
+                Text(
+                    stringResource(R.string.pet_photo),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF3E2723)
+                )
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(
-                        onClick = {
-                            showPhotoDialog = false
-                            galleryLauncher.launch("image/*")
-                        },
+                        onClick = { showPhotoDialog = false; galleryLauncher.launch("image/*") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
@@ -121,7 +147,13 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.upload_pet_title), fontWeight = FontWeight.SemiBold, fontSize = 20.sp) },
+                title = {
+                    Text(
+                        stringResource(R.string.upload_pet_title),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF5C4033),
                     titleContentColor = Color.White
@@ -141,7 +173,6 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
 
             // ── Foto ──────────────────────────────────────────────────────
             SectionTitle(stringResource(R.string.pet_photo))
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -155,12 +186,9 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                     AsyncImage(
                         model = imageUri,
                         contentDescription = "Foto de la mascota",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(16.dp)),
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
                         contentScale = ContentScale.Crop
                     )
-                    // Botón de cambiar foto encima
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -186,10 +214,9 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
 
             // ── Datos básicos ─────────────────────────────────────────────
             SectionTitle(stringResource(R.string.basic_data))
-
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                label = { Text(stringResource(R.string.pet_name)+" *") },
+                label = { Text(stringResource(R.string.pet_name) + " *") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp), colors = fieldColors()
             )
@@ -206,50 +233,96 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                 shape = RoundedCornerShape(12.dp), maxLines = 4, colors = fieldColors()
             )
 
+            // ── Ubicación ─────────────────────────────────────────────────
+            SectionTitle("Ubicación")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text("Ciudad") },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = fieldColors()
+                )
+                OutlinedButton(
+                    onClick = {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
+                    border = BorderStroke(1.5.dp, Color(0xFF5C4033)),
+                    modifier = Modifier.height(56.dp)
+                ) {
+                    Text("GPS", fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            // Feedback del GPS
+            when (locationStatus) {
+                "ok" -> Text(
+                    "📍 Ubicación obtenida: $city",
+                    fontSize = 12.sp,
+                    color = Color(0xFF388E3C)
+                )
+                "error" -> Text(
+                    "No se pudo obtener la ubicación",
+                    fontSize = 12.sp,
+                    color = Color(0xFFC62828)
+                )
+                "denied" -> Text(
+                    "Permiso denegado. Ingresá la ciudad manualmente.",
+                    fontSize = 12.sp,
+                    color = Color(0xFFC62828)
+                )
+            }
+
             // ── Especie ───────────────────────────────────────────────────
-            SectionTitle(stringResource(R.string.pet_species)+" *")
-            val speciesOptions = listOf(
-                "Perro" to stringResource(R.string.search_dog),
-                "Gato" to stringResource(R.string.search_cat),
-                "Otro" to stringResource(R.string.search_other))
+            SectionTitle(stringResource(R.string.pet_species) + " *")
             ChipGroup(
-                options = speciesOptions,
+                options = listOf(
+                    "Perro" to stringResource(R.string.search_dog),
+                    "Gato" to stringResource(R.string.search_cat),
+                    "Otro" to stringResource(R.string.search_other)
+                ),
                 selected = selectedSpecies,
                 onSelect = { selectedSpecies = it }
             )
 
             // ── Género ────────────────────────────────────────────────────
-            SectionTitle(stringResource(R.string.pet_gender)+" *")
-            val genderOptions = listOf(
-                "Macho" to stringResource(R.string.male_option),
-                "Hembra" to stringResource(R.string.female_option))
+            SectionTitle(stringResource(R.string.pet_gender) + " *")
             ChipGroup(
-                options = genderOptions,
+                options = listOf(
+                    "Macho" to stringResource(R.string.male_option),
+                    "Hembra" to stringResource(R.string.female_option)
+                ),
                 selected = selectedGender,
                 onSelect = { selectedGender = it }
             )
 
             // ── Tamaño ────────────────────────────────────────────────────
             SectionTitle(stringResource(R.string.pet_size) + " *")
-            val sizeOptions = listOf(
-                "Pequeño" to stringResource(R.string.little_size_option),
-                "Mediano" to stringResource(R.string.medium_size_option),
-                "Grande" to stringResource(R.string.big_size_option),
-                "Senior" to stringResource(R.string.senior_age_option))
             ChipGroup(
-                options = sizeOptions,
+                options = listOf(
+                    "Pequeño" to stringResource(R.string.little_size_option),
+                    "Mediano" to stringResource(R.string.medium_size_option),
+                    "Grande" to stringResource(R.string.big_size_option)
+                ),
                 selected = selectedSize,
                 onSelect = { selectedSize = it }
             )
 
             // ── Edad ──────────────────────────────────────────────────────
-            SectionTitle(stringResource(R.string.pet_age)+" *")
-            val ageGroupOptions = listOf(
-                "Cachorro" to stringResource(R.string.puppy_age_option),
-                "Joven" to stringResource(R.string.young_age_option),
-                "Adulto" to stringResource(R.string.adult_age_option))
+            SectionTitle(stringResource(R.string.pet_age) + " *")
             ChipGroup(
-                options = ageGroupOptions,
+                options = listOf(
+                    "Cachorro" to stringResource(R.string.puppy_age_option),
+                    "Joven" to stringResource(R.string.young_age_option),
+                    "Adulto" to stringResource(R.string.adult_age_option),
+                    "Senior" to stringResource(R.string.senior_age_option)
+                ),
                 selected = selectedAgeGroup,
                 onSelect = { selectedAgeGroup = it }
             )
@@ -266,9 +339,12 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                         ageGroup    = selectedAgeGroup,
                         description = description,
                         imageUrl    = "",
+                        city        = city,
+                        latitude    = latitude,
+                        longitude   = longitude,
                         timestamp   = System.currentTimeMillis()
                     )
-                    petViewModel.uploadPet(context,post, imageUri)
+                    petViewModel.uploadPet(context, post, imageUri)
                     onPostSuccess()
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -279,7 +355,11 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                 ),
                 enabled = isFormValid
             ) {
-                Text(stringResource(R.string.upload_button), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(
+                    stringResource(R.string.upload_button),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -302,13 +382,15 @@ private fun SectionTitle(text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChipGroup(
-    options: List<Pair<String, String>>, // Primer String es el valor real, segundo es la etiqueta
+    options: List<Pair<String, String>>,
     selected: String,
     onSelect: (String) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()) // Añadido scroll por si las traducciones son largas
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
     ) {
         options.forEach { (value, label) ->
             val isSelected = selected == value
@@ -329,12 +411,14 @@ private fun ChipGroup(
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true, selected = isSelected,
-                    borderColor = Color(0xFF5C4033), selectedBorderColor = Color(0xFF5C4033)
+                    borderColor = Color(0xFF5C4033),
+                    selectedBorderColor = Color(0xFF5C4033)
                 )
             )
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
