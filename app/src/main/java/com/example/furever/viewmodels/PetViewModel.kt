@@ -141,6 +141,10 @@ class PetViewModel : ViewModel() {
         }
     }
 
+    fun deletePet(petId: String) {
+        db.collection("pets").document(petId).delete()
+    }
+
     private fun savePet(
         pet: PetPost,
         petRef: com.google.firebase.firestore.DocumentReference,

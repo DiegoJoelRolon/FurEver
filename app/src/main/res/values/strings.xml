@@ -27,6 +27,9 @@
     <string name="search_hint">Busca por nombre, raza o ciudad…</string>
     <string name="profile_button">Perfil</string>
     <string name="home_button">Inicio</string>
+    <string name="delete_confirmation_first">¿Eliminar publicación?</string>
+    <string name="delete_confirmation_second">¿Estás seguro de que quieres borrar a %1$s? Esta acción no se puede deshacer.</string>
+    <string name="delete_button">Eliminar</string>
     <!--ProfileScreen-->
     <!-- Agrega esto en la sección de ProfileScreen -->
     <string name="settings_language">Idioma de la aplicación</string>

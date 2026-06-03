@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.furever.R
 import com.example.furever.auth.AuthViewModel
+import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +51,27 @@ fun HomeScreen(
     var selectedSize     by remember { mutableStateOf("Todos") }
     var selectedAgeGroup by remember { mutableStateOf("Todos") }
 
+    val currentUser by authViewModel.currentUser.collectAsState()
+    var petToDelete by remember { mutableStateOf<PetPost?>(null) }
+
+    if (petToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { petToDelete = null },
+            title = { Text(stringResource(R.string.delete_confirmation_first)) },
+            text = { Text(stringResource(R.string.delete_confirmation_second,petToDelete?.name ?: "")) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        petToDelete?.let { petViewModel.deletePet(it.id) }
+                        petToDelete = null
+                    }
+                ) { Text(stringResource(R.string.delete_button), color = Color.Red) }
+            },
+            dismissButton = {
+                TextButton(onClick = { petToDelete = null }) { Text(stringResource(R.string.cancel)) }
+            }
+        )
+    }
     // Cuenta cuántos filtros secundarios están activos (género, tamaño, edad)
     val activeFilterCount = listOf(selectedGender, selectedSize, selectedAgeGroup)
         .count { it != "Todos" }
@@ -347,11 +370,18 @@ fun HomeScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(pets) { pet ->
+                    val isOwner = currentUser?.email == pet.ownerId
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .combinedClickable(onClick = { onNavigateToPetDetail(pet.id) },onLongClick = {if (isOwner) petToDelete = pet }),
                         shape = RoundedCornerShape(16.dp),
-                        onClick = { onNavigateToPetDetail(pet.id) },
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isOwner)
+                                Color(0xFFFFF8E1) // Distinto color si es dueño de la mascota
+                            else
+                                Color.White
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                     ) {
                         Column {
