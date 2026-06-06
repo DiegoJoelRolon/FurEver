@@ -365,6 +365,34 @@ fun PetDetailScreen(
                     }
                 }
 
+                // ── Contacto del dueño ────────────────────────────────────────
+                if (isAvailable && (pet.ownerId.isNotEmpty() || pet.ownerPhone.isNotEmpty())) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    SectionCard(title = "Contactar al dueño", icon = Icons.Rounded.Person) {
+                        Text(
+                            "¿Te interesa esta mascota? Escribile directamente:",
+                            fontSize = 13.sp,
+                            color    = Color(0xFF9E9E9E)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        if (pet.ownerId.isNotEmpty()) {
+                            ContactRow(
+                                icon  = Icons.Default.Email,
+                                label = "Email",
+                                value = pet.ownerId
+                            )
+                        }
+                        if (pet.ownerPhone.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            ContactRow(
+                                icon  = Icons.Default.Phone,
+                                label = "Teléfono",
+                                value = pet.ownerPhone
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // ── Botón adoptar ─────────────────────────────────────────────

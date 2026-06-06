@@ -128,41 +128,50 @@ class PetViewModel : ViewModel() {
 
     fun uploadPet(context: Context, pet: PetPost, imageUri: Uri? = null) {
         ensureCloudinaryInitialized(context)
-        val usermail = auth.currentUser?.email ?: "Error"
+        val uid      = auth.currentUser?.uid ?: return
+        val usermail = auth.currentUser?.email ?: ""
         val petRef   = db.collection("pets").document()
 
-        if (imageUri != null) {
-            MediaManager.get().upload(imageUri)
-                .unsigned("ml_default")
-                .callback(object : UploadCallback {
-                    override fun onStart(requestId: String?) {}
-                    override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
-                    override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
-                        savePet(pet, petRef, usermail, resultData?.get("secure_url") as? String ?: "")
-                    }
-                    override fun onError(requestId: String?, error: ErrorInfo?) {
-                        Log.e("Cloudinary", "Error: ${error?.description}")
-                        savePet(pet, petRef, usermail, "")
-                    }
-                    override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
-                }).dispatch()
-        } else {
-            savePet(pet, petRef, usermail, "")
-        }
+        // ✅ Primero buscar el teléfono del dueño
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { doc ->
+                val ownerPhone = doc.getString("phone") ?: ""
+                if (imageUri != null) {
+                    MediaManager.get().upload(imageUri)
+                        .unsigned("ml_default")
+                        .callback(object : UploadCallback {
+                            override fun onStart(requestId: String?) {}
+                            override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                            override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                                val imageUrl = resultData?.get("secure_url") as? String ?: ""
+                                savePet(pet, petRef, usermail, ownerPhone, imageUrl)
+                            }
+                            override fun onError(requestId: String?, error: ErrorInfo?) {
+                                Log.e("Cloudinary", "Error: ${error?.description}")
+                                savePet(pet, petRef, usermail, ownerPhone, "")
+                            }
+                            override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                        }).dispatch()
+                } else {
+                    savePet(pet, petRef, usermail, ownerPhone, "")
+                }
+            }
     }
 
     private fun savePet(
         pet: PetPost,
         petRef: com.google.firebase.firestore.DocumentReference,
         usermail: String,
+        ownerPhone: String,  // ← nuevo parámetro
         imageUrl: String
     ) {
         petRef.set(pet.copy(
-            id        = petRef.id,
-            ownerId   = usermail,
-            imageUrl  = imageUrl,
-            images    = if (imageUrl.isNotEmpty()) listOf(imageUrl) else emptyList(),
-            timestamp = System.currentTimeMillis()
+            id         = petRef.id,
+            ownerId    = usermail,
+            ownerPhone = ownerPhone,  // ← guardar teléfono
+            imageUrl   = imageUrl,
+            images     = if (imageUrl.isNotEmpty()) listOf(imageUrl) else emptyList(),
+            timestamp  = System.currentTimeMillis()
         ))
     }
 
