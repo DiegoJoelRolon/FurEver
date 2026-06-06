@@ -9,5 +9,11 @@ data class User(
     val city: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val profileImageUrl: String = ""
+    val profileImageUrl: String = "",
+    val favorites: List<String> = emptyList(),      // IDs de mascotas favoritas
+    val hasCompletedOnboarding: Boolean = false,    // si ya hizo el onboarding
+    val prefSpecies: String = "",                   // preferencia especie
+    val prefSize: String = "",                      // preferencia tamaño
+    val prefAge: String = "",                       // preferencia edad
+    val prefGender: String = ""                     // preferencia género
 )
