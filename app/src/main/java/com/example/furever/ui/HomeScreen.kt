@@ -1,27 +1,26 @@
 package com.example.furever.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +33,7 @@ import com.example.furever.auth.AuthViewModel
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -42,285 +42,83 @@ fun HomeScreen(
     onNavigateToAddPet: () -> Unit,
     onNavigateToPetDetail: (String) -> Unit
 ) {
-    val pets by petViewModel.allFilteredPets.collectAsStateWithLifecycle()
-    var searchText       by remember { mutableStateOf("") }
-    var showFilterPanel  by remember { mutableStateOf(false) }
-
-    var selectedSpecies  by remember { mutableStateOf("Todas") }
-    var selectedGender   by remember { mutableStateOf("Todos") }
-    var selectedSize     by remember { mutableStateOf("Todos") }
-    var selectedAgeGroup by remember { mutableStateOf("Todos") }
-
-    val currentUser by authViewModel.currentUser.collectAsState()
-    var petToDelete by remember { mutableStateOf<PetPost?>(null) }
-
-    if (petToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { petToDelete = null },
-            title = { Text(stringResource(R.string.delete_confirmation_first)) },
-            text = { Text(stringResource(R.string.delete_confirmation_second,petToDelete?.name ?: "")) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        petToDelete?.let { petViewModel.deletePet(it.id) }
-                        petToDelete = null
-                    }
-                ) { Text(stringResource(R.string.delete_button), color = Color.Red) }
-            },
-            dismissButton = {
-                TextButton(onClick = { petToDelete = null }) { Text(stringResource(R.string.cancel)) }
-            }
-        )
-    }
-    // Cuenta cuántos filtros secundarios están activos (género, tamaño, edad)
-    val activeFilterCount = listOf(selectedGender, selectedSize, selectedAgeGroup)
-        .count { it != "Todos" }
+    val currentUser  by authViewModel.currentUser.collectAsStateWithLifecycle()
+    val recentPets   by petViewModel.recentPets.collectAsStateWithLifecycle()
+    val dogs         by petViewModel.dogs.collectAsStateWithLifecycle()
+    val cats         by petViewModel.cats.collectAsStateWithLifecycle()
+    val puppies      by petViewModel.puppies.collectAsStateWithLifecycle()
+    val others       by petViewModel.others.collectAsStateWithLifecycle()
+    val filteredPets by petViewModel.allFilteredPets.collectAsStateWithLifecycle()
+    var activeSearch by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) { petViewModel.fetchPets() }
-
-    fun getPetTranslation(value: String): Int? = when (value) {
-        "Perro"      -> R.string.search_dog
-        "Gato"       -> R.string.search_cat
-        "Otro"       -> R.string.search_other
-        "Macho"      -> R.string.male_option
-        "Hembra"     -> R.string.female_option
-        "Pequeño"    -> R.string.little_size_option
-        "Mediano"    -> R.string.medium_size_option
-        "Grande"     -> R.string.big_size_option
-        "Cachorro"   -> R.string.puppy_age_option
-        "Joven"      -> R.string.young_age_option
-        "Adulto"     -> R.string.adult_age_option
-        "Senior"     -> R.string.senior_age_option
-        "Disponible" -> R.string.available
-        "Adoptado"   -> R.string.adopted
-        else         -> null
-    }
 
     Scaffold(
         topBar = {
             Column(modifier = Modifier.background(Color(0xFF5C4033))) {
-
                 TopAppBar(
                     title = {
-                        Text("FurEver 🐾", fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector        = Icons.Rounded.Pets,
+                                contentDescription = null,
+                                tint               = Color(0xFFD7CCC8),
+                                modifier           = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("FurEver", fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                        }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFF5C4033),
+                        containerColor    = Color(0xFF5C4033),
                         titleContentColor = Color.White
                     )
                 )
-
-                // ── Fila: buscador + botón filtros + chips especie ────────
-                Row(
-                    modifier = Modifier
+                OutlinedTextField(
+                    value         = activeSearch,
+                    onValueChange = {
+                        activeSearch = it
+                        petViewModel.onSearchQueryChanged(it)
+                    },
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.search_hint),
+                            color    = Color.LightGray,
+                            fontSize = 13.sp
+                        )
+                    },
+                    modifier    = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Buscador
-                    OutlinedTextField(
-                        value = searchText,
-                        onValueChange = {
-                            searchText = it
-                            petViewModel.onSearchQueryChanged(it)
-                        },
-                        placeholder = {
-                            Text(stringResource(R.string.search_hint), color = Color.LightGray, fontSize = 13.sp)
-                        },
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        leadingIcon = {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor   = Color.White,
-                            unfocusedBorderColor = Color(0x66FFFFFF),
-                            cursorColor          = Color.White,
-                            focusedTextColor     = Color.White,
-                            unfocusedTextColor   = Color.White
-                        ),
-                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp)
-                    )
-
-                    // Botón filtros con badge
-                    Box {
-                        IconButton(
-                            onClick = { showFilterPanel = !showFilterPanel },
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    if (showFilterPanel || activeFilterCount > 0)
-                                        Color(0xFFD7CCC8)
-                                    else
-                                        Color(0x33FFFFFF)
-                                )
-                        ) {
-                            Icon(
-                                Icons.Default.Tune,
-                                contentDescription = "Filtros",
-                                tint = if (showFilterPanel || activeFilterCount > 0)
-                                    Color(0xFF5C4033)
-                                else
-                                    Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        // Badge con cantidad de filtros activos
-                        if (activeFilterCount > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFC62828))
-                                    .align(Alignment.TopEnd),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    activeFilterCount.toString(),
-                                    fontSize = 9.sp,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // ── Chips de especie — siempre visibles ───────────────────
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp)
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf(
-                        "Todas" to stringResource(R.string.search_all),
-                        "Perro" to stringResource(R.string.search_dog),
-                        "Gato"  to stringResource(R.string.search_cat),
-                        "Otro"  to stringResource(R.string.search_other)
-                    ).forEach { (key, label) ->
-                        val isSelected = selectedSpecies == key
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = {
-                                selectedSpecies = key
-                                petViewModel.onSpeciesFilterChanged(key)
-                            },
-                            label = { Text(label, fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                containerColor         = Color.Transparent,
-                                labelColor             = Color.White,
-                                selectedContainerColor = Color(0xFFD7CCC8),
-                                selectedLabelColor     = Color(0xFF5C4033)
-                            ),
-                            border = FilterChipDefaults.filterChipBorder(
-                                enabled             = true,
-                                selected            = isSelected,
-                                borderColor         = Color(0x66FFFFFF),
-                                selectedBorderColor = Color.Transparent,
-                                borderWidth         = 1.dp
-                            )
+                        .padding(bottom = 12.dp)
+                        .height(48.dp),
+                    shape       = RoundedCornerShape(12.dp),
+                    singleLine  = true,
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint               = Color.White,
+                            modifier           = Modifier.size(18.dp)
                         )
-                    }
-                }
-
-                // ── Panel colapsable: género, tamaño, edad ────────────────
-                AnimatedVisibility(
-                    visible = showFilterPanel,
-                    enter = expandVertically(),
-                    exit = shrinkVertically()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFF4A3228))
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Género
-                        FilterSection(
-                            title = stringResource(R.string.pet_gender),
-                            options = listOf(
-                                "Todos"  to "Todos",
-                                "Macho"  to stringResource(R.string.male_option),
-                                "Hembra" to stringResource(R.string.female_option)
-                            ),
-                            selected = selectedGender,
-                            onSelect = {
-                                selectedGender = it
-                                petViewModel.onGenderFilterChanged(it)
-                            }
-                        )
-
-                        // Tamaño
-                        FilterSection(
-                            title = stringResource(R.string.pet_size),
-                            options = listOf(
-                                "Todos"   to "Todos",
-                                "Pequeño" to stringResource(R.string.little_size_option),
-                                "Mediano" to stringResource(R.string.medium_size_option),
-                                "Grande"  to stringResource(R.string.big_size_option)
-                            ),
-                            selected = selectedSize,
-                            onSelect = {
-                                selectedSize = it
-                                petViewModel.onSizeFilterChanged(it)
-                            }
-                        )
-
-                        // Edad
-                        FilterSection(
-                            title = stringResource(R.string.pet_age),
-                            options = listOf(
-                                "Todos"    to "Todos",
-                                "Cachorro" to stringResource(R.string.puppy_age_option),
-                                "Joven"    to stringResource(R.string.young_age_option),
-                                "Adulto"   to stringResource(R.string.adult_age_option),
-                                "Senior"   to stringResource(R.string.senior_age_option)
-                            ),
-                            selected = selectedAgeGroup,
-                            onSelect = {
-                                selectedAgeGroup = it
-                                petViewModel.onAgeGroupFilterChanged(it)
-                            }
-                        )
-
-                        // Botón limpiar filtros
-                        if (activeFilterCount > 0) {
-                            TextButton(
-                                onClick = {
-                                    selectedGender   = "Todos"
-                                    selectedSize     = "Todos"
-                                    selectedAgeGroup = "Todos"
-                                    petViewModel.onGenderFilterChanged("Todos")
-                                    petViewModel.onSizeFilterChanged("Todos")
-                                    petViewModel.onAgeGroupFilterChanged("Todos")
-                                },
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text(
-                                    "Limpiar filtros",
-                                    color = Color(0xFFD7CCC8),
-                                    fontSize = 12.sp
-                                )
-                            }
-                        }
-                    }
-                }
+                    },
+                    colors    = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor   = Color.White,
+                        unfocusedBorderColor = Color(0x66FFFFFF),
+                        cursorColor          = Color.White,
+                        focusedTextColor     = Color.White,
+                        unfocusedTextColor   = Color.White
+                    ),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 13.sp)
+                )
             }
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToAddPet,
+                onClick        = onNavigateToAddPet,
                 containerColor = Color(0xFF5C4033),
-                contentColor = Color.White,
-                shape = RoundedCornerShape(16.dp)
+                contentColor   = Color.White,
+                shape          = RoundedCornerShape(16.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_pet))
             }
@@ -328,145 +126,239 @@ fun HomeScreen(
         containerColor = Color(0xFFF5F0EB)
     ) { padding ->
 
-        if (pets.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("🐾", fontSize = 48.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        "No se encontraron mascotas",
-                        color = Color(0xFF9E9E9E),
-                        fontWeight = FontWeight.Medium
-                    )
-                    if (activeFilterCount > 0 || searchText.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        TextButton(onClick = {
-                            searchText       = ""
-                            selectedSpecies  = "Todas"
-                            selectedGender   = "Todos"
-                            selectedSize     = "Todos"
-                            selectedAgeGroup = "Todos"
-                            petViewModel.onSearchQueryChanged("")
-                            petViewModel.onSpeciesFilterChanged("Todas")
-                            petViewModel.onGenderFilterChanged("Todos")
-                            petViewModel.onSizeFilterChanged("Todos")
-                            petViewModel.onAgeGroupFilterChanged("Todos")
-                        }) {
-                            Text("Limpiar búsqueda", color = Color(0xFF5C4033))
-                        }
+        if (activeSearch.isNotEmpty()) {
+            if (filteredPets.isEmpty()) {
+                Box(
+                    modifier         = Modifier.fillMaxSize().padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector        = Icons.Rounded.Pets,
+                            contentDescription = null,
+                            tint               = Color(0xFFBCAAA4),
+                            modifier           = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            "No se encontraron mascotas",
+                            color      = Color(0xFF9E9E9E),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier            = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding      = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(filteredPets) { pet ->
+                        val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                        PetCardVertical(
+                            pet         = pet,
+                            isFav       = isFav,
+                            onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                            onClick     = { onNavigateToPetDetail(pet.id) }
+                        )
                     }
                 }
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                modifier       = Modifier.fillMaxSize().padding(padding),
+                contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                items(pets) { pet ->
-                    val isOwner = currentUser?.email == pet.ownerId
-                    Card(
+                item {
+                    val nombre = currentUser?.name?.takeIf { it.isNotEmpty() } ?: "amigo"
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .combinedClickable(onClick = { onNavigateToPetDetail(pet.id) },onLongClick = {if (isOwner) petToDelete = pet }),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isOwner)
-                                Color(0xFFFFF8E1) // Distinto color si es dueño de la mascota
-                            else
-                                Color.White
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+                            .padding(horizontal = 20.dp, vertical = 16.dp)
                     ) {
-                        Column {
-                            AsyncImage(
-                                model = pet.imageUrl,
-                                contentDescription = pet.name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(180.dp)
-                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        pet.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF3E2723)
-                                    )
-                                    Surface(
-                                        shape = RoundedCornerShape(20.dp),
-                                        color = if (pet.adoptedStatus == "Disponible")
-                                            Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
-                                    ) {
-                                        val statusRes = getPetTranslation(pet.adoptedStatus)
-                                        Text(
-                                            text = statusRes?.let { stringResource(it) }
-                                                ?: pet.adoptedStatus,
-                                            modifier = Modifier.padding(
-                                                horizontal = 10.dp, vertical = 4.dp
-                                            ),
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            color = if (pet.adoptedStatus == "Disponible")
-                                                Color(0xFF388E3C) else Color(0xFFC62828)
-                                        )
-                                    }
-                                }
+                        Text(
+                            "Hola, $nombre",
+                            fontSize   = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = Color(0xFF3E2723)
+                        )
+                        Text(
+                            "Encontrá tu compañero ideal",
+                            fontSize = 14.sp,
+                            color    = Color(0xFF9E9E9E)
+                        )
+                    }
+                }
 
-                                Spacer(modifier = Modifier.height(4.dp))
-                                val speciesRes = getPetTranslation(pet.species)
-                                Text(
-                                    buildString {
-                                        append(speciesRes?.let { stringResource(it) } ?: pet.species)
-                                        if (pet.breed.isNotEmpty()) append(" · ${pet.breed}")
-                                    },
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF795548)
+                if (recentPets.isNotEmpty()) {
+                    item {
+                        SectionHeader(
+                            title       = "Recién llegados",
+                            count       = recentPets.size,
+                            icon        = Icons.Rounded.AutoAwesome,
+                            iconTint    = Color(0xFFF57C00),
+                            iconBgColor = Color(0xFFFFF3E0)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(recentPets) { pet ->
+                                val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                                PetCardHorizontal(
+                                    pet         = pet,
+                                    isFav       = isFav,
+                                    onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                                    onClick     = { onNavigateToPetDetail(pet.id) }
                                 )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
 
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    if (pet.gender.isNotEmpty()) {
-                                        PetChip(
-                                            getPetTranslation(pet.gender)
-                                                ?.let { stringResource(it) } ?: pet.gender
-                                        )
-                                    }
-                                    if (pet.ageGroup.isNotEmpty()) {
-                                        PetChip(
-                                            getPetTranslation(pet.ageGroup)
-                                                ?.let { stringResource(it) } ?: pet.ageGroup
-                                        )
-                                    }
-                                    if (pet.size.isNotEmpty()) {
-                                        PetChip(
-                                            getPetTranslation(pet.size)
-                                                ?.let { stringResource(it) } ?: pet.size
-                                        )
-                                    }
-                                }
+                if (dogs.isNotEmpty()) {
+                    item {
+                        SectionHeader(
+                            title       = "Perros",
+                            count       = dogs.size,
+                            icon        = Icons.Rounded.Pets,
+                            iconTint    = Color(0xFF388E3C),
+                            iconBgColor = Color(0xFFE8F5E9)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(dogs) { pet ->
+                                val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                                PetCardHorizontal(
+                                    pet         = pet,
+                                    isFav       = isFav,
+                                    onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                                    onClick     = { onNavigateToPetDetail(pet.id) }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
 
-                                if (pet.city.isNotEmpty()) {
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text(
-                                        "📍 ${pet.city}",
-                                        fontSize = 12.sp,
-                                        color = Color(0xFF9E9E9E)
-                                    )
-                                }
+                if (puppies.isNotEmpty()) {
+                    item {
+                        SectionHeader(
+                            title       = "Cachorros",
+                            count       = puppies.size,
+                            icon        = Icons.Rounded.CrueltyFree,
+                            iconTint    = Color(0xFF7B1FA2),
+                            iconBgColor = Color(0xFFEDE7F6)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(puppies) { pet ->
+                                val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                                PetCardHorizontal(
+                                    pet         = pet,
+                                    isFav       = isFav,
+                                    onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                                    onClick     = { onNavigateToPetDetail(pet.id) }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                if (cats.isNotEmpty()) {
+                    item {
+                        SectionHeader(
+                            title       = "Gatos",
+                            count       = cats.size,
+                            icon        = Icons.Rounded.Pets,
+                            iconTint    = Color(0xFFC62828),
+                            iconBgColor = Color(0xFFFFEBEE)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(cats) { pet ->
+                                val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                                PetCardHorizontal(
+                                    pet         = pet,
+                                    isFav       = isFav,
+                                    onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                                    onClick     = { onNavigateToPetDetail(pet.id) }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                if (others.isNotEmpty()) {
+                    item {
+                        SectionHeader(
+                            title       = "Otros",
+                            count       = others.size,
+                            icon        = Icons.Rounded.Pets,
+                            iconTint    = Color(0xFF5C4033),
+                            iconBgColor = Color(0xFFEDE0D4)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(others) { pet ->
+                                val isFav = currentUser?.favorites?.contains(pet.id) ?: false
+                                PetCardHorizontal(
+                                    pet         = pet,
+                                    isFav       = isFav,
+                                    onToggleFav = { authViewModel.toggleFavorite(pet.id) },
+                                    onClick     = { onNavigateToPetDetail(pet.id) }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                if (recentPets.isEmpty() && dogs.isEmpty() && cats.isEmpty() && others.isEmpty()) {
+                    item {
+                        Box(
+                            modifier         = Modifier
+                                .fillParentMaxSize()
+                                .padding(top = 80.dp),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    imageVector        = Icons.Rounded.Pets,
+                                    contentDescription = null,
+                                    tint               = Color(0xFFBCAAA4),
+                                    modifier           = Modifier.size(48.dp)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    "No hay mascotas disponibles aún",
+                                    color      = Color(0xFF9E9E9E),
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
                         }
                     }
@@ -478,44 +370,139 @@ fun HomeScreen(
 
 // ── Componentes privados ──────────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FilterSection(
+private fun SectionHeader(
     title: String,
-    options: List<Pair<String, String>>,
-    selected: String,
-    onSelect: (String) -> Unit
+    count: Int,
+    icon: ImageVector,
+    iconTint: Color,
+    iconBgColor: Color
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            title,
-            fontSize = 11.sp,
-            color = Color(0xFFD7CCC8),
-            fontWeight = FontWeight.Medium
-        )
+    Row(
+        modifier              = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment     = Alignment.CenterVertically
+    ) {
         Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            options.forEach { (key, label) ->
-                val isSelected = selected == key
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { onSelect(key) },
-                    label = { Text(label, fontSize = 12.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor         = Color.Transparent,
-                        labelColor             = Color(0xFFD7CCC8),
-                        selectedContainerColor = Color(0xFFD7CCC8),
-                        selectedLabelColor     = Color(0xFF5C4033)
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled             = true,
-                        selected            = isSelected,
-                        borderColor         = Color(0x55D7CCC8),
-                        selectedBorderColor = Color.Transparent,
-                        borderWidth         = 1.dp
+            Box(
+                modifier         = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(iconBgColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector        = icon,
+                    contentDescription = null,
+                    tint               = iconTint,
+                    modifier           = Modifier.size(18.dp)
+                )
+            }
+            Text(
+                title,
+                fontSize   = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color      = Color(0xFF3E2723)
+            )
+        }
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = Color(0xFFEDE0D4)
+        ) {
+            Text(
+                "$count",
+                modifier   = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                fontSize   = 11.sp,
+                color      = Color(0xFF5C4033),
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun PetCardHorizontal(
+    pet: PetPost,
+    isFav: Boolean,
+    onToggleFav: () -> Unit,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier  = Modifier.width(160.dp),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(3.dp)
+    ) {
+        Box(modifier = Modifier.clickable { onClick() }) {
+            Column {
+                AsyncImage(
+                    model              = pet.imageUrl,
+                    contentDescription = pet.name,
+                    modifier           = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    contentScale       = ContentScale.Crop
+                )
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        pet.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 14.sp,
+                        color      = Color(0xFF3E2723),
+                        maxLines   = 1
                     )
+                    if (pet.breed.isNotEmpty()) {
+                        Text(
+                            pet.breed,
+                            fontSize = 11.sp,
+                            color    = Color(0xFF795548),
+                            maxLines = 1
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        if (pet.ageGroup.isNotEmpty()) MiniChip(pet.ageGroup, Icons.Rounded.Cake)
+                        if (pet.size.isNotEmpty())     MiniChip(pet.size,     Icons.Rounded.Straighten)
+                    }
+                    if (pet.city.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector        = Icons.Rounded.LocationOn,
+                                contentDescription = null,
+                                tint               = Color(0xFF9E9E9E),
+                                modifier           = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(pet.city, fontSize = 10.sp, color = Color(0xFF9E9E9E), maxLines = 1)
+                        }
+                    }
+                }
+            }
+
+            // ✅ IconButton con zIndex — siempre por encima del clickable del Box
+            IconButton(
+                onClick  = onToggleFav,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(36.dp)
+                    // sin zIndex
+                    .clip(CircleShape)
+                    .background(Color(0xCCFFFFFF))
+            ) {
+                Icon(
+                    imageVector        = if (isFav) Icons.Filled.Favorite
+                    else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "Favorito",
+                    tint               = if (isFav) Color(0xFFC62828) else Color(0xFF9E9E9E),
+                    modifier           = Modifier.size(16.dp)
                 )
             }
         }
@@ -523,14 +510,130 @@ private fun FilterSection(
 }
 
 @Composable
-private fun PetChip(label: String) {
+private fun PetCardVertical(
+    pet: PetPost,
+    isFav: Boolean,
+    onToggleFav: () -> Unit,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(3.dp)
+    ) {
+        Box(modifier = Modifier.clickable { onClick() }) {
+            Column {
+                Box {
+                    AsyncImage(
+                        model              = pet.imageUrl,
+                        contentDescription = pet.name,
+                        modifier           = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                        contentScale       = ContentScale.Crop
+                    )
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (pet.adoptedStatus == "Disponible")
+                            Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                    ) {
+                        Text(
+                            pet.adoptedStatus,
+                            modifier   = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            fontSize   = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color      = if (pet.adoptedStatus == "Disponible")
+                                Color(0xFF388E3C) else Color(0xFFC62828)
+                        )
+                    }
+                }
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Text(
+                        pet.name,
+                        style      = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color      = Color(0xFF3E2723)
+                    )
+                    Text(
+                        buildString {
+                            append(pet.species)
+                            if (pet.breed.isNotEmpty()) append(" · ${pet.breed}")
+                        },
+                        fontSize = 13.sp,
+                        color    = Color(0xFF795548)
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        if (pet.gender.isNotEmpty())   MiniChip(pet.gender,   Icons.Rounded.Person)
+                        if (pet.ageGroup.isNotEmpty()) MiniChip(pet.ageGroup, Icons.Rounded.Cake)
+                        if (pet.size.isNotEmpty())     MiniChip(pet.size,     Icons.Rounded.Straighten)
+                    }
+                    if (pet.city.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector        = Icons.Rounded.LocationOn,
+                                contentDescription = null,
+                                tint               = Color(0xFF9E9E9E),
+                                modifier           = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(pet.city, fontSize = 12.sp, color = Color(0xFF9E9E9E))
+                        }
+                    }
+                }
+            }
+
+            // ✅ IconButton con zIndex — siempre por encima del clickable del Box
+            IconButton(
+                onClick  = onToggleFav,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(36.dp)
+                    // sin zIndex
+                    .clip(CircleShape)
+                    .background(Color(0xCCFFFFFF))
+            ) {
+                Icon(
+                    imageVector        = if (isFav) Icons.Filled.Favorite
+                    else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "Favorito",
+                    tint               = if (isFav) Color(0xFFC62828) else Color(0xFF9E9E9E),
+                    modifier           = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MiniChip(label: String, icon: ImageVector? = null) {
     Surface(shape = RoundedCornerShape(20.dp), color = Color(0xFFF5F0EB)) {
-        Text(
-            label,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-            fontSize = 11.sp,
-            color = Color(0xFF5C4033),
-            fontWeight = FontWeight.Medium
-        )
+        Row(
+            modifier              = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector        = icon,
+                    contentDescription = null,
+                    tint               = Color(0xFF5C4033),
+                    modifier           = Modifier.size(10.dp)
+                )
+            }
+            Text(
+                label,
+                fontSize   = 10.sp,
+                color      = Color(0xFF5C4033),
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }

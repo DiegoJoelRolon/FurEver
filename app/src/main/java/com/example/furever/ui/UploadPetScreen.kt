@@ -339,6 +339,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                         ageGroup    = selectedAgeGroup,
                         description = description,
                         imageUrl    = "",
+                        images      = emptyList(),
                         city        = city,
                         latitude    = latitude,
                         longitude   = longitude,

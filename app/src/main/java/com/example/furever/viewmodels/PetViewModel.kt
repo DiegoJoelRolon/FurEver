@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class PetViewModel : ViewModel() {
@@ -28,53 +29,30 @@ class PetViewModel : ViewModel() {
     val pets: StateFlow<List<PetPost>> = _pets
 
     // ── Filtros ───────────────────────────────────────────────────────────────
-    private val _searchQuery     = MutableStateFlow("")
-    private val _speciesFilter   = MutableStateFlow("Todas")
-    private val _genderFilter    = MutableStateFlow("Todos")
-    private val _sizeFilter      = MutableStateFlow("Todos")
-    private val _ageGroupFilter  = MutableStateFlow("Todos")
+    private val _searchQuery    = MutableStateFlow("")
+    private val _speciesFilter  = MutableStateFlow("Todas")
+    private val _genderFilter   = MutableStateFlow("Todos")
+    private val _sizeFilter     = MutableStateFlow("Todos")
+    private val _ageGroupFilter = MutableStateFlow("Todos")
 
-    // ── Lista filtrada reactiva ───────────────────────────────────────────────
-    val filteredPets: StateFlow<List<PetPost>> = combine(
-        _pets,
-        _searchQuery,
-        _speciesFilter,
-        _genderFilter,
-        _sizeFilter
-    ) { pets, query, species, gender, size ->
-        pets.filter { pet ->
-            val matchesSearch  = query.isEmpty() ||
-                    pet.name.contains(query, ignoreCase = true) ||
-                    pet.city.contains(query, ignoreCase = true) ||
-                    pet.breed.contains(query, ignoreCase = true)
-            val matchesSpecies = species == "Todas" || pet.species == species
-            val matchesGender  = gender  == "Todos" || pet.gender  == gender
-            val matchesSize    = size    == "Todos" || pet.size    == size
-            matchesSearch && matchesSpecies && matchesGender && matchesSize
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    // combine solo acepta hasta 5 parámetros, así que el filtro de edad
-    // lo aplicamos observando _ageGroupFilter por separado
-    private val _ageGroupFilterState = MutableStateFlow("Todos")
-
-    init {
-        fetchPets()
-    }
+    init { fetchPets() }
 
     // ── Funciones de filtro ───────────────────────────────────────────────────
-    fun onSearchQueryChanged(query: String)   { _searchQuery.value    = query   }
-    fun onSpeciesFilterChanged(species: String) { _speciesFilter.value = species }
-    fun onGenderFilterChanged(gender: String)   { _genderFilter.value  = gender  }
-    fun onSizeFilterChanged(size: String)       { _sizeFilter.value    = size    }
+    fun onSearchQueryChanged(query: String)       { _searchQuery.value   = query   }
+    fun onSpeciesFilterChanged(species: String)   { _speciesFilter.value = species }
+    fun onGenderFilterChanged(gender: String)     { _genderFilter.value  = gender  }
+    fun onSizeFilterChanged(size: String)         { _sizeFilter.value    = size    }
+    fun onAgeGroupFilterChanged(ageGroup: String) { _ageGroupFilter.value = ageGroup }
 
-    // Para el filtro de edad usamos filteredPets como base en la UI,
-    // pero lo resolvemos dentro del mismo combine extendido:
-    fun onAgeGroupFilterChanged(ageGroup: String) {
-        _ageGroupFilter.value = ageGroup
+    fun clearAllFilters() {
+        _searchQuery.value    = ""
+        _speciesFilter.value  = "Todas"
+        _genderFilter.value   = "Todos"
+        _sizeFilter.value     = "Todos"
+        _ageGroupFilter.value = "Todos"
     }
 
-    // ── Lista filtrada con los 5 filtros (versión completa) ───────────────────
+    // ── Lista filtrada completa (buscador + todos los filtros) ────────────────
     val allFilteredPets: StateFlow<List<PetPost>> = combine(
         _pets,
         _searchQuery,
@@ -84,9 +62,7 @@ class PetViewModel : ViewModel() {
     ) { pets, query, species, gender, (size, age) ->
         pets.filter { pet ->
             val matchesSearch  = query.isEmpty() ||
-                    pet.name.contains(query, ignoreCase = true)  ||
-                    pet.city.contains(query, ignoreCase = true)  ||
-                    pet.breed.contains(query, ignoreCase = true)
+                    pet.name.contains(query, ignoreCase = true)
             val matchesSpecies = species == "Todas" || pet.species  == species
             val matchesGender  = gender  == "Todos" || pet.gender   == gender
             val matchesSize    = size    == "Todos" || pet.size     == size
@@ -94,6 +70,42 @@ class PetViewModel : ViewModel() {
             matchesSearch && matchesSpecies && matchesGender && matchesSize && matchesAge
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // ── Conteo de resultados para la pantalla de filtros ─────────────────────
+    val filteredCount: StateFlow<Int> = allFilteredPets
+        .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    // ── Secciones para el home ────────────────────────────────────────────────
+    // Solo mascotas disponibles
+    val availablePets: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.adoptedStatus == "Disponible" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Perros disponibles
+    val dogs: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.species == "Perro" && p.adoptedStatus == "Disponible" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Gatos disponibles
+    val cats: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.species == "Gato" && p.adoptedStatus == "Disponible" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Otros disponibles
+    val others: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.species == "Otro" && p.adoptedStatus == "Disponible" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Cachorros disponibles
+    val puppies: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.ageGroup == "Cachorro" && p.adoptedStatus == "Disponible" } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Recién llegados (últimos 10 disponibles)
+    val recentPets: StateFlow<List<PetPost>> = _pets
+        .map { it.filter { p -> p.adoptedStatus == "Disponible" }.take(10) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // ── Firestore ─────────────────────────────────────────────────────────────
     fun fetchPets() {
@@ -116,29 +128,34 @@ class PetViewModel : ViewModel() {
 
     fun uploadPet(context: Context, pet: PetPost, imageUri: Uri? = null) {
         ensureCloudinaryInitialized(context)
-
-        val usermail = auth.currentUser?.email ?: "Error"
+        val uid      = auth.currentUser?.uid ?: return
+        val usermail = auth.currentUser?.email ?: ""
         val petRef   = db.collection("pets").document()
 
-        if (imageUri != null) {
-            MediaManager.get().upload(imageUri)
-                .unsigned("ml_default")
-                .callback(object : UploadCallback {
-                    override fun onStart(requestId: String?) {}
-                    override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
-                    override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
-                        val imageUrl = resultData?.get("secure_url") as? String ?: ""
-                        savePet(pet, petRef, usermail, imageUrl)
-                    }
-                    override fun onError(requestId: String?, error: ErrorInfo?) {
-                        Log.e("Cloudinary", "Error: ${error?.description}")
-                        savePet(pet, petRef, usermail, "")
-                    }
-                    override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
-                }).dispatch()
-        } else {
-            savePet(pet, petRef, usermail, "")
-        }
+        // ✅ Primero buscar el teléfono del dueño
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { doc ->
+                val ownerPhone = doc.getString("phone") ?: ""
+                if (imageUri != null) {
+                    MediaManager.get().upload(imageUri)
+                        .unsigned("ml_default")
+                        .callback(object : UploadCallback {
+                            override fun onStart(requestId: String?) {}
+                            override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                            override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                                val imageUrl = resultData?.get("secure_url") as? String ?: ""
+                                savePet(pet, petRef, usermail, ownerPhone, imageUrl)
+                            }
+                            override fun onError(requestId: String?, error: ErrorInfo?) {
+                                Log.e("Cloudinary", "Error: ${error?.description}")
+                                savePet(pet, petRef, usermail, ownerPhone, "")
+                            }
+                            override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                        }).dispatch()
+                } else {
+                    savePet(pet, petRef, usermail, ownerPhone, "")
+                }
+            }
     }
 
     fun deletePet(petId: String) {
@@ -149,21 +166,83 @@ class PetViewModel : ViewModel() {
         pet: PetPost,
         petRef: com.google.firebase.firestore.DocumentReference,
         usermail: String,
+        ownerPhone: String,  // ← nuevo parámetro
         imageUrl: String
     ) {
-        petRef.set(
-            pet.copy(
-                id        = petRef.id,
-                ownerId   = usermail,
-                imageUrl  = imageUrl,
-                timestamp = System.currentTimeMillis()
-            )
-        )
+        petRef.set(pet.copy(
+            id         = petRef.id,
+            ownerId    = usermail,
+            ownerPhone = ownerPhone,  // ← guardar teléfono
+            imageUrl   = imageUrl,
+            images     = if (imageUrl.isNotEmpty()) listOf(imageUrl) else emptyList(),
+            timestamp  = System.currentTimeMillis()
+        ))
     }
 
     // ── Adoptar ───────────────────────────────────────────────────────────────
     fun adoptPet(petId: String) {
+        val adopterEmail = auth.currentUser?.email ?: ""
+        val adopterUid   = auth.currentUser?.uid   ?: ""
+
+        db.collection("users").document(adopterUid).get()
+            .addOnSuccessListener { doc ->
+                val phone = doc.getString("phone") ?: ""
+                db.collection("pets").document(petId).update(mapOf(
+                    "adoptedStatus" to "Adoptado",
+                    "adopterEmail"  to adopterEmail,
+                    "adopterPhone"  to phone
+                ))
+            }
+            .addOnFailureListener {
+                db.collection("pets").document(petId).update(mapOf(
+                    "adoptedStatus" to "Adoptado",
+                    "adopterEmail"  to adopterEmail,
+                    "adopterPhone"  to ""
+                ))
+            }
+    }
+
+    // ── Editar ────────────────────────────────────────────────────────────────
+    fun updatePet(
+        context: Context,
+        petId: String,
+        updatedFields: Map<String, Any>,
+        newImageUri: Uri? = null,
+        onSuccess: () -> Unit = {},
+        onError: (String) -> Unit = {}
+    ) {
+        if (newImageUri != null) {
+            ensureCloudinaryInitialized(context)
+            MediaManager.get().upload(newImageUri)
+                .unsigned("ml_default")
+                .callback(object : UploadCallback {
+                    override fun onStart(requestId: String?) {}
+                    override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                    override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                        val imageUrl = resultData?.get("secure_url") as? String ?: ""
+                        db.collection("pets").document(petId)
+                            .update(updatedFields.toMutableMap().apply { put("imageUrl", imageUrl) })
+                            .addOnSuccessListener { onSuccess() }
+                            .addOnFailureListener { onError(it.message ?: "Error") }
+                    }
+                    override fun onError(requestId: String?, error: ErrorInfo?) {
+                        onError(error?.description ?: "Error Cloudinary")
+                    }
+                    override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                }).dispatch()
+        } else {
+            db.collection("pets").document(petId)
+                .update(updatedFields)
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { onError(it.message ?: "Error") }
+        }
+    }
+
+    // ── Eliminar ──────────────────────────────────────────────────────────────
+    fun deletePet(petId: String, onSuccess: () -> Unit = {}, onError: (String) -> Unit = {}) {
         db.collection("pets").document(petId)
-            .update("adoptedStatus", "Adoptado")
+            .delete()
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onError(it.message ?: "Error") }
     }
 }

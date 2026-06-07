@@ -14,7 +14,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -78,6 +82,9 @@ fun ProfileScreen(
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
     var showImageOptions by remember { mutableStateOf(false) }
 
+    // ── Edición de mascota ────────────────────────────────────────────────
+    var petToEdit by remember { mutableStateOf<PetPost?>(null) }
+
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
@@ -102,7 +109,7 @@ fun ProfileScreen(
         }
     }
 
-    // ── Dialog foto ───────────────────────────────────────────────────────
+    // ── Dialog: foto de perfil ─────────────────────────────────────────────
     if (showImageOptions) {
         AlertDialog(
             onDismissRequest = { showImageOptions = false },
@@ -124,13 +131,10 @@ fun ProfileScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF5C4033)
-                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) {
-                        Text("Elegir de la galería")
-                    }
+                    ) { Text("Elegir de la galería") }
+
                     OutlinedButton(
                         onClick = {
                             showImageOptions = false
@@ -138,13 +142,9 @@ fun ProfileScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFF5C4033)
-                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) {
-                        Text("Sacar una foto")
-                    }
+                    ) { Text("Sacar una foto") }
                 }
             },
             confirmButton = {},
@@ -152,6 +152,26 @@ fun ProfileScreen(
                 TextButton(onClick = { showImageOptions = false }) {
                     Text("Cancelar", color = Color(0xFF9E9E9E))
                 }
+            }
+        )
+    }
+
+    // ── Dialog: editar mascota ─────────────────────────────────────────────
+    // IMPORTANTE: debe estar DENTRO del árbol de composición, antes o después
+    // del Scaffold, pero siempre dentro del scope del @Composable principal.
+    petToEdit?.let { pet ->
+        EditPetDialog(
+            pet = pet,
+            onDismiss = { petToEdit = null },
+            onSave = { fields, imageUri ->
+                petViewModel.updatePet(
+                    context       = context,
+                    petId         = pet.id,
+                    updatedFields = fields,
+                    newImageUri   = imageUri,
+                    onSuccess     = { petToEdit = null },
+                    onError       = { petToEdit = null }
+                )
             }
         )
     }
@@ -191,7 +211,6 @@ fun ProfileScreen(
                         .padding(top = 24.dp, bottom = 36.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Avatar clickeable
                     Box(
                         modifier = Modifier
                             .size(88.dp)
@@ -218,7 +237,6 @@ fun ProfileScreen(
                                 color = Color(0xFF5C4033)
                             )
                         }
-                        // Ícono de edición
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -227,13 +245,17 @@ fun ProfileScreen(
                                 .background(Color(0xFF3E2723)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("✎", fontSize = 13.sp, color = Color.White)
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar foto",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Nombre si existe, si no el email
                     Text(
                         displayName,
                         color = Color.White,
@@ -241,22 +263,29 @@ fun ProfileScreen(
                         fontSize = 18.sp
                     )
                     if (displayName != email) {
-                        Text(
-                            email,
-                            color = Color(0xFFD7CCC8),
-                            fontSize = 13.sp
-                        )
+                        Text(email, color = Color(0xFFD7CCC8), fontSize = 13.sp)
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Ciudad si existe
                     if (!currentUserProfile?.city.isNullOrEmpty()) {
-                        Text(
-                            "📍 ${currentUserProfile?.city}",
-                            color = Color(0xFFD7CCC8),
-                            fontSize = 13.sp
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = Color(0xFFD7CCC8),
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                currentUserProfile?.city ?: "",
+                                color = Color(0xFFD7CCC8),
+                                fontSize = 13.sp
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
 
@@ -400,8 +429,10 @@ fun ProfileScreen(
             // ── Cards de mascotas ─────────────────────────────────────────
             items(myPets) { pet ->
                 MyPetCard(
-                    pet = pet,
-                    onClick = { onNavigateToPetDetail(pet.id) }
+                    pet      = pet,
+                    onClick  = { onNavigateToPetDetail(pet.id) },
+                    onEdit   = { petToEdit = it },
+                    onDelete = { petViewModel.deletePet(it.id) }
                 )
             }
 
@@ -425,8 +456,7 @@ fun ProfileScreen(
     }
 }
 
-// ── Componentes privados ──────────────────────────────────────────────────────
-
+// ── StatCard ──────────────────────────────────────────────────────────────────
 
 @Composable
 private fun StatCard(
@@ -454,9 +484,66 @@ private fun StatCard(
     }
 }
 
+// ── MyPetCard ─────────────────────────────────────────────────────────────────
+
 @Composable
-private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
+private fun MyPetCard(
+    pet: PetPost,
+    onClick: () -> Unit,
+    onEdit: (PetPost) -> Unit,
+    onDelete: (PetPost) -> Unit
+) {
     val isAvailable = pet.adoptedStatus == "Disponible"
+    var showMenu by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    // ── Confirmación de eliminación ───────────────────────────────────────
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = Color.White,
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = Color(0xFFC62828),
+                    modifier = Modifier.size(28.dp)
+                )
+            },
+            title = {
+                Text(
+                    "Eliminar mascota",
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF3E2723)
+                )
+            },
+            text = {
+                Text(
+                    "¿Seguro que querés eliminar a ${pet.name}? Esta acción no se puede deshacer.",
+                    color = Color(0xFF5C4033)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteConfirm = false
+                        onDelete(pet)          // ← llama directo, sin lambda extra
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC62828)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Eliminar", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text("Cancelar", color = Color(0xFF9E9E9E))
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -488,11 +575,16 @@ private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
                 )
                 Text(getTranslation(pet.species), fontSize = 13.sp, color = Color(0xFF795548))
                 if (!pet.city.isNullOrEmpty()) {
-                    Text(
-                        "📍 ${pet.city}",
-                        fontSize = 12.sp,
-                        color = Color(0xFF9E9E9E)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = Color(0xFF9E9E9E),
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text(pet.city, fontSize = 12.sp, color = Color(0xFF9E9E9E))
+                    }
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Surface(
@@ -509,11 +601,213 @@ private fun MyPetCard(pet: PetPost, onClick: () -> Unit) {
                     )
                 }
             }
+
+            // ── Menú ─────────────────────────────────────────────────────
+            Box {
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Opciones",
+                        tint = Color(0xFF9E9E9E)
+                    )
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    containerColor = Color.White
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Editar", color = Color(0xFF3E2723)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                tint = Color(0xFF5C4033),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        onClick = {
+                            showMenu = false
+                            onEdit(pet)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Eliminar", color = Color(0xFFC62828)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = Color(0xFFC62828),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        onClick = {
+                            showMenu = false
+                            showDeleteConfirm = true
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
-// ── Helper fuera del Composable ───────────────────────────────────────────────
+// ── EditPetDialog ─────────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditPetDialog(
+    pet: PetPost,
+    onDismiss: () -> Unit,
+    onSave: (updatedFields: Map<String, Any>, newImageUri: Uri?) -> Unit
+) {
+    var name           by remember { mutableStateOf(pet.name) }
+    var description    by remember { mutableStateOf(pet.description) }
+    var city           by remember { mutableStateOf(pet.city ?: "") }
+    var status         by remember { mutableStateOf(pet.adoptedStatus) }
+    var newImageUri    by remember { mutableStateOf<Uri?>(null) }
+    var statusExpanded by remember { mutableStateOf(false) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> uri?.let { newImageUri = it } }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = Color.White,
+        title = {
+            Text(
+                "Editar ${pet.name}",
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF3E2723)
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                // Cambiar foto
+                OutlinedButton(
+                    onClick = { galleryLauncher.launch("image/*") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
+                    border = BorderStroke(1.5.dp, Color(0xFF5C4033))
+                ) {
+                    Icon(
+                        imageVector = if (newImageUri != null) Icons.Default.Edit else Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(if (newImageUri != null) "Foto seleccionada" else "Cambiar foto")
+                }
+
+                // Nombre
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF5C4033),
+                        focusedLabelColor  = Color(0xFF5C4033)
+                    )
+                )
+
+                // Descripción
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Descripción") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF5C4033),
+                        focusedLabelColor  = Color(0xFF5C4033)
+                    )
+                )
+
+                // Ciudad
+                OutlinedTextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text("Ciudad") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF5C4033),
+                        focusedLabelColor  = Color(0xFF5C4033)
+                    )
+                )
+
+                // Estado
+                ExposedDropdownMenuBox(
+                    expanded = statusExpanded,
+                    onExpandedChange = { statusExpanded = !statusExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = status,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Estado") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = statusExpanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF5C4033),
+                            focusedLabelColor  = Color(0xFF5C4033)
+                        )
+                    )
+                    ExposedDropdownMenu(
+                        expanded = statusExpanded,
+                        onDismissRequest = { statusExpanded = false }
+                    ) {
+                        listOf("Disponible", "Adoptado").forEach { s ->
+                            DropdownMenuItem(
+                                text = { Text(s) },
+                                onClick = {
+                                    status = s
+                                    statusExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val fields = mapOf<String, Any>(
+                        "name"          to name.trim(),
+                        "description"   to description.trim(),
+                        "city"          to city.trim(),
+                        "adoptedStatus" to status
+                    )
+                    onSave(fields, newImageUri)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033)),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Guardar", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = Color(0xFF9E9E9E))
+            }
+        }
+    )
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 private fun createCameraUri(context: Context): Uri {
     val file = java.io.File(
@@ -526,4 +820,3 @@ private fun createCameraUri(context: Context): Uri {
         file
     )
 }
-
