@@ -25,8 +25,8 @@
     <string name="search_cat">Gato</string>
     <string name="search_other">Otro</string>
     <string name="search_hint">Busca por nombre, raza o ciudad…</string>
-    <string name="delete_confirmation_first">¿Eliminar publicación?</string>
-    <string name="delete_confirmation_second">¿Estás seguro de que quieres borrar a %1$s? Esta acción no se puede deshacer.</string>
+    <string name="delete_confirmation_first">Eliminar mascota</string>
+    <string name="delete_confirmation_second">¿Seguro que querés eliminar a %1$s? Esta acción no se puede deshacer.</string>
     <string name="delete_button">Eliminar</string>
     <string name="new_comers">Recién llegados</string>
     <string name="puppies">Cachorros</string>
@@ -47,6 +47,13 @@
     <string name="my_posts">Mis publicaciones</string>
     <string name="empty_posts">Todavía no publicaste ninguna mascota</string>
     <string name="sign_out">Cerrar sesión</string>
+    <string name="adoption_requests">Solicitudes de adopción</string>
+    <plurals name="pending_requests">
+        <item quantity="one">%d solicitud pendiente</item>
+        <item quantity="other">%d solicitudes pendientes</item>
+    </plurals>
+    <string name="no_pending_requests">Sin solicitudes pendientes</string>
+
 
     <!--UploadPetScreen-->
     <string name="upload_pet_title">Publicar Mascota</string>
@@ -73,6 +80,7 @@
     <string name="senior_age_option">Senior</string>
     <string name="upload_button">Publicar para Adopción</string>
     <string name="take_photo">Sacar una foto</string>
+    <string name="location">Ubicación</string>
 
     <!--Navigation-->
     <string name="profile_button">Perfil</string>
@@ -86,12 +94,67 @@
     <string name="prepered_pet_life_stage">¿Qué etapa de vida preferís?</string>
     <string name="prepered_pet_gender">¿Tenés preferencia de género?</string>
     <string name="prepered_pet_description">¿Cómo lo imaginás?</string>
-
     <string name="pet_type_subtitle">Elegí el tipo de compañero que buscás</string>
     <string name="pet_size_subtitle">Pensá en el espacio que tenés en casa</string>
     <string name="pet_age_subtitle">Cada edad tiene su encanto</string>
     <string name="pet_gender_subtitle">Solo para ayudarte a encontrar tu match ideal</string>
+    <string name="suprise_me_option">Sorprendeme</string>
+    <string name="no_preference">Sin preferencia</string>
+    <string name="no_restriction">Sin restricción</string>
+    <string name="dog_description">Fiel, juguetón y activo</string>
+    <string name="cat_description">Independiente y tranquilo</string>
+    <string name="other_pets_description">Conejo, hurón y más</string>
+    <string name="any_pet_type">Cualquier tipo de mascota</string>
+    <string name="small_size">Menos de 10kg</string>
+    <string name="medium_size">Entre 10 y 25kg</string>
+    <string name="large_size">Más de 25kg</string>
+    <string name="puppy_age">Menos de 1 año</string>
+    <string name="young_age">Entre 1 y 3 años</string>
+    <string name="adult_age">Entre 3 y 8 años</string>
+    <string name="senior_age">Más de 8 años</string>
+    <string name="male_gender">Masculino</string>
+    <string name="female_gender">Femenino</string>
+    <string name="no_gender_preference">Me da igual</string>
+    <string name="next_button">Siguiente →</string>
+    <string name="view_results">Ver resultados ✓</string>
+    <string name="skip_step">Saltar este paso</string>
+    <string name="current_step">Paso %1$d de %2$d</string>
+    <string name="perfect_match">Tu match perfecto</string>
+    <string name="back">← Atrás</string>
+    <string name="looking_for">Buscás algo así…</string>
+    <string name="no_filters">Sin filtros — mostrando todas las mascotas</string>
+    <string name="pets_found">%1$d mascotas encontradas</string>
+    <string name="ready_for_adoption">listas para ser adoptadas</string>
+    <string name="change">Cambiar</string>
+    <string name="no_pets_found">No hay mascotas con esas características todavía</string>
+    <string name="try_other_filters">Probar con otros filtros</string>
+    <string name="added_to_favorites">✓ Agregados a favoritos</string>
+    <string name="save_all_favorites">Guardar los %1$d en favoritos</string>
+    <string name="configure_again">Volver a configurar</string>
 
+    <!--FavouritesScreen-->
+    <string name="my_favorites">Mis Favoritos</string>
+    <string name="no_favorites_yet">Todavía no tenés favoritos</string>
+    <string name="favorites_hint">Tocá el ♡ en cualquier mascota \n para guardarla acá</string>
+    <plurals name="saved_pets">
+        <item quantity="one">%d mascota guardada</item>
+        <item quantity="other">%d mascotas guardadas</item>
+    </plurals>
+
+    <!--AdoptionRequestsScreen-->
+    <string name="received_requests">Solicitudes recibidas</string>
+
+    <string name="no_requests_pending">No tenés solicitudes pendientes</string>
+
+    <string name="requests_hint">Cuando alguien quiera adoptar\nuna de tus mascotas, aparecerá acá</string>
+
+    <string name="people_want_to_adopt">Estas personas quieren adoptar tus mascotas</string>
+
+    <string name="requested_by">Solicitado por</string>
+
+    <string name="reject">Rechazar</string>
+
+    <string name="accept">Aceptar</string>
 
     <string name="language">Idioma</string>
 

@@ -39,8 +39,8 @@ import com.example.furever.R
 
 private data class WizardOption(
     val value: String,
-    val label: String,
-    val subtitle: String,
+    val label: Int,
+    val subtitle: Int,
     val emoji: String,
     val bgColor: Color
 )
@@ -62,10 +62,10 @@ private val wizardSteps = listOf(
         headerEmoji   = "🐾",
         headerBgColor = Color(0xFFEDE0D4),
         options       = listOf(
-            WizardOption("Perro",           "Perro",       "Fiel, juguetón y activo",   "🐕", Color(0xFFE8F5E9)),
-            WizardOption("Gato",            "Gato",        "Independiente y tranquilo", "🐈", Color(0xFFE8EAF6)),
-            WizardOption("Otro",            "Otro",        "Conejo, hurón y más",       "🐇", Color(0xFFFFF3E0)),
-            WizardOption("Sin preferencia", "Sorprendeme", "Cualquier tipo de mascota", "✨", Color(0xFFF5F0EB))
+            WizardOption("Perro",           R.string.search_dog,          R.string.dog_description,         "🐕", Color(0xFFE8F5E9)),
+            WizardOption("Gato",            R.string.search_cat,          R.string.cat_description,         "🐈", Color(0xFFE8EAF6)),
+            WizardOption("Otro",            R.string.search_other,        R.string.other_pets_description,  "🐇", Color(0xFFFFF3E0)),
+            WizardOption("Sin preferencia", R.string.suprise_me_option,   R.string.any_pet_type,            "✨", Color(0xFFF5F0EB))
         )
     ),
     WizardStep(
@@ -75,10 +75,10 @@ private val wizardSteps = listOf(
         headerEmoji   = "📏",
         headerBgColor = Color(0xFFE1F5FE),
         options       = listOf(
-            WizardOption("Pequeño",         "Pequeño",        "Menos de 10kg",   "🤏", Color(0xFFE1F5FE)),
-            WizardOption("Mediano",         "Mediano",        "Entre 10 y 25kg", "👐", Color(0xFFE8F5E9)),
-            WizardOption("Grande",          "Grande",         "Más de 25kg",     "🦮", Color(0xFFFFEBEE)),
-            WizardOption("Sin preferencia", "Sin preferencia","Sin restricción",  "✨", Color(0xFFF5F0EB))
+            WizardOption("Pequeño",         R.string.little_size_option,        R.string.small_size,   "🤏", Color(0xFFE1F5FE)),
+            WizardOption("Mediano",         R.string.medium_size_option,        R.string.medium_size, "👐", Color(0xFFE8F5E9)),
+            WizardOption("Grande",          R.string.big_size_option,           R.string.large_size,     "🦮", Color(0xFFFFEBEE)),
+            WizardOption("Sin preferencia", R.string.no_preference,             R.string.no_restriction,  "✨", Color(0xFFF5F0EB))
         )
     ),
     WizardStep(
@@ -88,11 +88,11 @@ private val wizardSteps = listOf(
         headerEmoji   = "🎂",
         headerBgColor = Color(0xFFFFF9C4),
         options       = listOf(
-            WizardOption("Cachorro",        "Cachorro",       "Menos de 1 año",   "🍼", Color(0xFFFFF9C4)),
-            WizardOption("Joven",           "Joven",          "Entre 1 y 3 años", "⚡", Color(0xFFFFEBEE)),
-            WizardOption("Adulto",          "Adulto",         "Entre 3 y 8 años", "🌿", Color(0xFFE8F5E9)),
-            WizardOption("Senior",          "Senior",         "Más de 8 años",    "🧡", Color(0xFFFCE4EC)),
-            WizardOption("Sin preferencia", "Sin preferencia","Sin restricción",   "✨", Color(0xFFF5F0EB))
+            WizardOption("Cachorro",        R.string.puppy_age_option,          R.string.puppy_age,     "🍼", Color(0xFFFFF9C4)),
+            WizardOption("Joven",           R.string.young_age_option,          R.string.young_age,     "⚡", Color(0xFFFFEBEE)),
+            WizardOption("Adulto",          R.string.adult_age_option,          R.string.adult_age,     "🌿", Color(0xFFE8F5E9)),
+            WizardOption("Senior",          R.string.senior_age_option,         R.string.senior_age,    "🧡", Color(0xFFFCE4EC)),
+            WizardOption("Sin preferencia", R.string.no_preference,             R.string.no_restriction,"✨", Color(0xFFF5F0EB))
         )
     ),
     WizardStep(
@@ -102,9 +102,9 @@ private val wizardSteps = listOf(
         headerEmoji   = "💙",
         headerBgColor = Color(0xFFE3F2FD),
         options       = listOf(
-            WizardOption("Macho",           "Macho",      "Masculino",   "♂", Color(0xFFE3F2FD)),
-            WizardOption("Hembra",          "Hembra",     "Femenino",    "♀", Color(0xFFFCE4EC)),
-            WizardOption("Sin preferencia", "Sorprendeme","Me da igual", "✨", Color(0xFFF5F0EB))
+            WizardOption("Macho",           R.string.male_option,       R.string.male_gender,          "♂",  Color(0xFFE3F2FD)),
+            WizardOption("Hembra",          R.string.female_option,     R.string.female_gender,        "♀",  Color(0xFFFCE4EC)),
+            WizardOption("Sin preferencia", R.string.suprise_me_option, R.string.no_gender_preference, "✨", Color(0xFFF5F0EB))
         )
     )
 )
@@ -163,7 +163,7 @@ fun PreferencesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        if (showResults) "Tu match perfecto" else stringResource(R.string.prepered_pet_description),
+                        if (showResults) stringResource(R.string.perfect_match) else stringResource(R.string.prepered_pet_description),
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 20.sp
                     )
@@ -286,7 +286,7 @@ private fun WizardView(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            "Paso ${currentStep + 1} de ${steps.size}",
+            text = stringResource(R.string.current_step, currentStep + 1, steps.size),
             fontSize = 11.sp,
             color    = Color(0xFF9E9E9E)
         )
@@ -378,14 +378,14 @@ private fun WizardView(
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                option.label,
+                                text = stringResource(option.label),
                                 fontSize   = 14.sp,
                                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                                 color      = if (isSelected) Color.White else Color(0xFF3E2723)
                             )
                             if (!isSinPref) {
                                 Text(
-                                    option.subtitle,
+                                    text = stringResource(option.subtitle),
                                     fontSize = 11.sp,
                                     color    = if (isSelected) Color(0xCCFFFFFF) else Color(0xFF9E9E9E)
                                 )
@@ -421,7 +421,7 @@ private fun WizardView(
                     colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                     border   = BorderStroke(1.5.dp, Color(0xFF5C4033))
                 ) {
-                    Text("← Atrás", fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.back), fontWeight = FontWeight.Medium)
                 }
             }
             Button(
@@ -435,7 +435,7 @@ private fun WizardView(
                 enabled  = hasSelection
             ) {
                 Text(
-                    if (isLast) "Ver resultados ✓" else "Siguiente →",
+                    if (isLast) stringResource(R.string.view_results) else stringResource(R.string.next_button),
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -448,7 +448,7 @@ private fun WizardView(
             },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text("Saltar este paso", color = Color(0xFF9E9E9E), fontSize = 12.sp)
+            Text(stringResource(R.string.skip_step), color = Color(0xFF9E9E9E), fontSize = 12.sp)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -483,11 +483,11 @@ private fun ResultsView(
                     .background(Color(0xFF5C4033))
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                Text("Buscás algo así...", fontSize = 13.sp, color = Color(0xFFD7CCC8))
+                Text(stringResource(R.string.looking_for), fontSize = 13.sp, color = Color(0xFFD7CCC8))
                 Spacer(modifier = Modifier.height(10.dp))
                 if (activeTags.isEmpty()) {
                     Text(
-                        "Sin filtros — mostrando todas las mascotas",
+                        stringResource(R.string.no_filters),
                         fontSize = 13.sp,
                         color    = Color(0xFFD7CCC8)
                     )
@@ -525,12 +525,12 @@ private fun ResultsView(
             ) {
                 Column {
                     Text(
-                        "${matchingPets.size} mascotas encontradas",
+                         stringResource(R.string.pets_found,matchingPets.size),
                         fontSize   = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color      = Color(0xFF3E2723)
                     )
-                    Text("listas para ser adoptadas", fontSize = 13.sp, color = Color(0xFF9E9E9E))
+                    Text(stringResource(R.string.ready_for_adoption), fontSize = 13.sp, color = Color(0xFF9E9E9E))
                 }
                 OutlinedButton(
                     onClick        = onReset,
@@ -539,7 +539,7 @@ private fun ResultsView(
                     border         = BorderStroke(1.dp, Color(0xFF5C4033)),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Text("Cambiar", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.change), fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
@@ -553,14 +553,14 @@ private fun ResultsView(
                     Text("🔍", fontSize = 48.sp)
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        "No hay mascotas con esas características todavía",
+                        stringResource(R.string.no_pets_found),
                         fontSize  = 14.sp,
                         color     = Color(0xFF9E9E9E),
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextButton(onClick = onReset) {
-                        Text("Probar con otros filtros", color = Color(0xFF5C4033))
+                        Text(stringResource(R.string.try_other_filters), color = Color(0xFF5C4033))
                     }
                 }
             }
@@ -596,8 +596,8 @@ private fun ResultsView(
                                 modifier           = Modifier.size(18.dp)
                             )
                             Text(
-                                if (favoritesAdded) "✓ Agregados a favoritos"
-                                else "Guardar los ${matchingPets.size} en favoritos",
+                                if (favoritesAdded) stringResource(R.string.added_to_favorites)
+                                else stringResource(R.string.save_all_favorites,matchingPets.size),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 14.sp
                             )
@@ -609,7 +609,7 @@ private fun ResultsView(
                     onClick  = onReset,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Volver a configurar", color = Color(0xFF9E9E9E), fontSize = 13.sp)
+                    Text(stringResource(R.string.configure_again), color = Color(0xFF9E9E9E), fontSize = 13.sp)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))

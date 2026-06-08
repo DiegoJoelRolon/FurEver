@@ -69,15 +69,78 @@
     <string name="new_comers">New comers</string>
     <string name="puppies">Puppies</string>
     <string name="cats">Cats</string>
-    <string name="favourites_button">Favoritos</string>
+    <string name="favourites_button">Favorites</string>
     <string name="prepered_pet_type">What kind of pet are you looking for?</string>
     <string name="prepered_pet_size">What size would you prefer?</string>
     <string name="prepered_pet_gender">Do you have a gender preference?</string>
     <string name="prepered_pet_description">How do you picture your ideal pet?</string>
     <string name="pet_gender_subtitle">Just to help you find your ideal match</string>
+    <string name="no_gender_preference">I don\'t mind</string>
+    <string name="next_button">Next →</string>
+    <string name="view_results">View results ✓</string>
     <string name="language">Language</string>
     <string name="prepered_pet_life_stage">Which life stage do you prefer?</string>
     <string name="pet_type_subtitle">Choose the type of companion you\'re looking for</string>
     <string name="pet_size_subtitle">Think about the space you have at home</string>
     <string name="pet_age_subtitle">Every stage of life has its own charm</string>
+    <string name="dog_description">Loyal, playful and active</string>
+    <string name="cat_description">Independent and calm</string>
+    <string name="other_pets_description">Rabbit, ferret and more</string>
+    <string name="any_pet_type">Any type of pet</string>
+    <string name="small_size">Less than 10 kg</string>
+    <string name="medium_size">Between 10 and 25 kg</string>
+    <string name="large_size">More than 25 kg</string>
+    <string name="puppy_age">Less than 1 year old</string>
+    <string name="young_age">Between 1 and 3 years old</string>
+    <string name="adult_age">Between 3 and 8 years old</string>
+    <string name="senior_age">More than 8 years old</string>
+    <string name="male_gender">Male</string>
+    <string name="female_gender">Female</string>
+    <string name="suprise_me_option">Surprise me</string>
+    <string name="no_preference">No preference</string>
+    <string name="no_restriction">No restriction</string>
+    <string name="skip_step">Skip this step</string>
+    <string name="current_step">Step %1$d of %2$d</string>
+    <string name="perfect_match">Your perfect match</string>
+    <string name="back">← Back</string>
+    <string name="looking_for">Looking for something like this…</string>
+    <string name="no_filters">No filters — showing all pets</string>
+    <string name="pets_found">%1$d pets found</string>
+    <string name="ready_for_adoption">ready for adoption</string>
+    <string name="change">Change</string>
+    <string name="no_pets_found">No pets match those characteristics yet</string>
+    <string name="try_other_filters">Try other filters</string>
+    <string name="added_to_favorites">✓ Added to favorites</string>
+    <string name="save_all_favorites">Save all %1$d to favorites</string>
+    <string name="configure_again">Configure again</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="no_favorites_yet">You don\'t have any favorites yet</string>
+    <string name="favorites_hint">Tap the ♡ on any pet \n to save it here</string>
+    <plurals name="saved_pets">
+        <item quantity="one">%d pet saved</item>
+        <item quantity="other">%d pets saved</item>
+    </plurals>
+    <string name="delete_confirmation_first">Delete pet</string>
+    <string name="delete_confirmation_second">Are you sure you want to delete %1$s? This action cannot be undone.</string>
+    <string name="delete_button">Delete</string>
+    <string name="adoption_requests">Adoption Requests</string>
+    <plurals name="pending_requests">
+        <item quantity="one">%d pending request</item>
+        <item quantity="other">%d pending requests</item>
+    </plurals>
+    <string name="no_pending_requests">No pending requests</string>
+    <string name="received_requests">Received Requests</string>
+
+    <string name="no_requests_pending">You don\'t have any pending requests</string>
+
+    <string name="requests_hint">When someone wants to adopt\none of your pets, it will appear here</string>
+
+    <string name="people_want_to_adopt">These people want to adopt your pets</string>
+
+    <string name="requested_by">Requested by</string>
+
+    <string name="reject">Reject</string>
+
+    <string name="accept">Accept</string>
+    <string name="location">Location</string>
 </resources>

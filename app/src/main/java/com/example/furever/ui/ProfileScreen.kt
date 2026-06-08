@@ -437,16 +437,16 @@ fun ProfileScreen(
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Solicitudes de adopción",
+                                stringResource(R.string.adoption_requests),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 14.sp,
                                 color      = Color(0xFF3E2723)
                             )
                             Text(
                                 if (pendingRequests.isNotEmpty())
-                                    "${pendingRequests.size} solicitud${if (pendingRequests.size != 1) "es" else ""} pendiente${if (pendingRequests.size != 1) "s" else ""}"
+                                    pluralStringResource(R.plurals.pending_requests, pendingRequests.size,pendingRequests.size)
                                 else
-                                    "Sin solicitudes pendientes",
+                                    stringResource(R.string.no_pending_requests),
                                 fontSize = 12.sp,
                                 color    = if (pendingRequests.isNotEmpty())
                                     Color(0xFFC62828) else Color(0xFF9E9E9E)
@@ -595,14 +595,14 @@ private fun MyPetCard(
             },
             title = {
                 Text(
-                    "Eliminar mascota",
+                    stringResource(R.string.delete_confirmation_first),
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF3E2723)
                 )
             },
             text = {
                 Text(
-                    "¿Seguro que querés eliminar a ${pet.name}? Esta acción no se puede deshacer.",
+                    stringResource(R.string.delete_confirmation_second,pet.name),
                     color = Color(0xFF5C4033)
                 )
             },
@@ -615,12 +615,12 @@ private fun MyPetCard(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC62828)),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Eliminar", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.delete_button), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Cancelar", color = Color(0xFF9E9E9E))
+                    Text(stringResource(R.string.cancel), color = Color(0xFF9E9E9E))
                 }
             }
         )

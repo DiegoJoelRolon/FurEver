@@ -242,7 +242,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
             )
 
             // ── Ubicación ─────────────────────────────────────────────────
-            SectionTitle("Ubicación")
+            SectionTitle(stringResource(R.string.location))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

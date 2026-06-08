@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.viewmodels.PetViewModel
+import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +49,7 @@ fun FavoritesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Mis Favoritos",
+                        stringResource(R.string.my_favorites),
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 20.sp
                     )
@@ -74,14 +77,14 @@ fun FavoritesScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "Todavía no tenés favoritos",
+                        stringResource(R.string.no_favorites_yet),
                         fontSize   = 16.sp,
                         color      = Color(0xFF9E9E9E),
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Tocá el ♡ en cualquier mascota\npara guardarla acá",
+                        stringResource(R.string.favorites_hint),
                         fontSize   = 13.sp,
                         color      = Color(0xFFBCAAA4),
                         textAlign  = TextAlign.Center,
@@ -100,7 +103,7 @@ fun FavoritesScreen(
             ) {
                 item {
                     Text(
-                        "${favoritePets.size} mascota${if (favoritePets.size != 1) "s" else ""} guardada${if (favoritePets.size != 1) "s" else ""}",
+                        pluralStringResource(R.plurals.saved_pets,favoritePets.size,favoritePets.size),
                         fontSize = 13.sp,
                         color    = Color(0xFF9E9E9E)
                     )

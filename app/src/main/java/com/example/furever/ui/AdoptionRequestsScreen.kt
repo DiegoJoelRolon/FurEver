@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.example.furever.models.AdoptionRequest
 import com.example.furever.viewmodels.PetViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.furever.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +44,8 @@ fun AdoptionRequestsScreen(petViewModel: PetViewModel) {
                         verticalAlignment     = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text("Solicitudes recibidas", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+                        Text(
+                            stringResource(R.string.received_requests), fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
                         if (requests.isNotEmpty()) {
                             Surface(
                                 shape = RoundedCornerShape(20.dp),
@@ -82,14 +85,14 @@ fun AdoptionRequestsScreen(petViewModel: PetViewModel) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "No tenés solicitudes pendientes",
+                        stringResource(R.string.no_requests_pending),
                         fontSize   = 16.sp,
                         color      = Color(0xFF9E9E9E),
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Cuando alguien quiera adoptar\nuna de tus mascotas, aparecerá acá",
+                        stringResource(R.string.requests_hint),
                         fontSize  = 13.sp,
                         color     = Color(0xFFBCAAA4),
                         textAlign = TextAlign.Center,
@@ -105,7 +108,7 @@ fun AdoptionRequestsScreen(petViewModel: PetViewModel) {
             ) {
                 item {
                     Text(
-                        "Estas personas quieren adoptar tus mascotas.",
+                        stringResource(R.string.people_want_to_adopt),
                         fontSize = 13.sp,
                         color    = Color(0xFF9E9E9E)
                     )
@@ -162,7 +165,7 @@ private fun RequestCard(
                         color      = Color(0xFF3E2723)
                     )
                     Text(
-                        "Solicitado por",
+                        stringResource(R.string.requested_by),
                         fontSize = 11.sp,
                         color    = Color(0xFF9E9E9E)
                     )
@@ -208,7 +211,7 @@ private fun RequestCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Rechazar", fontWeight = FontWeight.Medium, fontSize = 13.sp)
+                    Text(stringResource(R.string.reject), fontWeight = FontWeight.Medium, fontSize = 13.sp)
                 }
 
                 Button(
@@ -225,7 +228,7 @@ private fun RequestCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Aceptar", fontWeight = FontWeight.Medium, fontSize = 13.sp)
+                    Text(stringResource(R.string.accept), fontWeight = FontWeight.Medium, fontSize = 13.sp)
                 }
             }
         }
