@@ -63,7 +63,15 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
 
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
-    ) { success -> if (success) imageUri = cameraImageUri }
+    ) { success ->
+        if (success) {
+            // Forzamos la actualización de la UI con la URI que ya conocemos
+            imageUri = cameraImageUri
+            android.util.Log.d("CameraDebug", "Foto capturada exitosamente en: $imageUri")
+        } else {
+            android.util.Log.e("CameraDebug", "La captura de foto falló o fue cancelada")
+        }
+    }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -132,7 +140,7 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) { Text("Sacar una foto") }
+                    ) { Text(stringResource(R.string.take_photo)) }
                 }
             },
             confirmButton = {},
@@ -369,9 +377,18 @@ fun UploadPetScreen(petViewModel: PetViewModel, onPostSuccess: () -> Unit) {
 }
 
 private fun createImageUri(context: Context): Uri {
-    val file = java.io.File(context.cacheDir, "pet_photo_${System.currentTimeMillis()}.jpg")
+    // Usar externalCacheDir es más seguro para interactuar con la cámara
+    val directory = context.externalCacheDir ?: context.cacheDir
+    val file = java.io.File(directory, "pet_photo_${System.currentTimeMillis()}.jpg")
+
+    // Asegurarse de que el archivo exista antes de entregárselo a la cámara
+    if (file.exists()) file.delete()
+    file.createNewFile()
+
     return androidx.core.content.FileProvider.getUriForFile(
-        context, "${context.packageName}.fileprovider", file
+        context,
+        "${context.packageName}.fileprovider",
+        file
     )
 }
 

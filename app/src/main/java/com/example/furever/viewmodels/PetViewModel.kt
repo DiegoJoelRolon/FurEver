@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.io.File
 
 class PetViewModel : ViewModel() {
 
@@ -126,32 +127,60 @@ class PetViewModel : ViewModel() {
         }
     }
 
+    private fun uriToFile(context: Context, uri: Uri): File {val tempFile = File(
+        context.cacheDir,
+        "upload_${System.currentTimeMillis()}.jpg"
+    )
+
+        try {
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("PetViewModel", "Error al copiar URI a File: ${e.message}")
+            throw e // Re-lanzamos para que el try-catch de uploadPet lo capture
+        }
+
+        return tempFile
+    }
+
     fun uploadPet(context: Context, pet: PetPost, imageUri: Uri? = null) {
         ensureCloudinaryInitialized(context)
         val uid      = auth.currentUser?.uid ?: return
         val usermail = auth.currentUser?.email ?: ""
         val petRef   = db.collection("pets").document()
 
+
         // ✅ Primero buscar el teléfono del dueño
         db.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
                 val ownerPhone = doc.getString("phone") ?: ""
                 if (imageUri != null) {
-                    MediaManager.get().upload(imageUri)
-                        .unsigned("ml_default")
-                        .callback(object : UploadCallback {
-                            override fun onStart(requestId: String?) {}
-                            override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
-                            override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
-                                val imageUrl = resultData?.get("secure_url") as? String ?: ""
-                                savePet(pet, petRef, usermail, ownerPhone, imageUrl)
-                            }
-                            override fun onError(requestId: String?, error: ErrorInfo?) {
-                                Log.e("Cloudinary", "Error: ${error?.description}")
-                                savePet(pet, petRef, usermail, ownerPhone, "")
-                            }
-                            override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
-                        }).dispatch()
+                    try {
+                        val file = uriToFile(context, imageUri)
+                        MediaManager.get().upload(file.absolutePath)
+                            .unsigned("ml_default")
+                            .callback(object : UploadCallback {
+                                override fun onStart(requestId: String?) {}
+                                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {}
+                                override fun onSuccess(requestId: String?, resultData: Map<*, *>?) {
+                                    val imageUrl = resultData?.get("secure_url") as? String ?: ""
+                                    savePet(pet, petRef, usermail, ownerPhone, imageUrl)
+                                }
+                                override fun onError(requestId: String?, error: ErrorInfo?) {
+                                    Log.e("Cloudinary", "Error: ${error?.description}")
+                                    savePet(pet, petRef, usermail, ownerPhone, "")
+                                }
+                                override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                            }).dispatch()
+                    }
+                    catch (e: Exception) {
+                        Log.e("UploadPet", "Error al procesar archivo: ${e.message}")
+                        savePet(pet, petRef, usermail, ownerPhone, "")
+                    }
+
                 } else {
                     savePet(pet, petRef, usermail, ownerPhone, "")
                 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +22,7 @@ import com.example.furever.auth.AuthState
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.ui.*
 import com.example.furever.viewmodels.PetViewModel
+import com.example.furever.R
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel) {
@@ -79,7 +81,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                             navController.navigate(Routes.HOME) { launchSingleTop = true }
                         },
                         icon  = { Icon(Icons.Filled.Home, contentDescription = "Inicio") },
-                        label = { Text("Inicio") },
+                        label = { Text(stringResource(R.string.home_button)) },
                         colors = navBarColors()
                     )
 
@@ -90,7 +92,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                             navController.navigate(Routes.FAVORITES) { launchSingleTop = true }
                         },
                         icon  = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") },
-                        label = { Text("Favoritos") },
+                        label = { Text(stringResource(R.string.favourites_button)) },
                         colors = navBarColors()
                     )
 
@@ -106,7 +108,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                                 contentDescription = "Buscar mi match"
                             )
                         },
-                        label  = { Text("Mi match") },   // ← label nuevo
+                        label  = { Text(stringResource(R.string.my_match_button)) },   // ← label nuevo
                         colors = navBarColors()
                     )
 
@@ -117,7 +119,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                             navController.navigate(Routes.PROFILE) { launchSingleTop = true }
                         },
                         icon  = { Icon(Icons.Filled.Person, contentDescription = "Perfil") },
-                        label = { Text("Perfil") },
+                        label = { Text(stringResource(R.string.profile_button)) },
                         colors = navBarColors()
                     )
                 }

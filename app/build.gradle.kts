@@ -96,7 +96,7 @@ dependencies {
 
     //Cloudinary
     implementation("com.cloudinary:cloudinary-android:3.0.2")
-    implementation("com.cloudinary:cloudinary-android:2.3.1")
+
 
     implementation("com.google.maps.android:maps-compose:4.3.3")
     implementation("com.google.android.gms:play-services-maps:18.2.0")

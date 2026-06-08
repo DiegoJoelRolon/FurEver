@@ -42,9 +42,15 @@
     <string name="search_hint">Busca por nombre, raza o ciudad...</string>
     <string name="profile_button">Perfil</string>
     <string name="home_button">Feed</string>
+    <string name="dogs">Cães</string>
+    <string name="others">Outros</string>
+    <string name="home_greetings">Olá %1$s</string>
     <string name="settings_language">Idioma do aplicativo</string>
     <string name="perfil">Meu perfil</string>
 
+    <string name="take_photo">Tirar uma foto</string>
+    <string name="my_match_button">My match</string>
+    <string name="prepered_pet_description">Como você o imagina?</string>
     <string name="language">Idioma</string>
     <string name="search_all">Todas</string>
     <string name="search_dog">Cão</string>
@@ -62,4 +68,19 @@
     <string name="puppy_age_option">Filhote</string>
     <string name="young_age_option">Jovem</string>
     <string name="adult_age_option">Adulto</string>
+    <string name="new_comers">" Recém chegados"</string>
+    <string name="puppies">cachorrinhos</string>
+    <string name="cats">Gatos</string>
+    <string name="favourites_button">Favourites</string>
+    <string name="prepered_pet_type">Que pet você imagina?</string>
+    <string name="prepered_pet_size">De que tamanho você o imagina?</string>
+    <string name="prepered_pet_life_stage">Qual fase da vida você prefere?</string>
+    <string name="prepered_pet_gender">Você tem preferência de gênero?</string>
+    <string name="pet_type_subtitle">Escolha o tipo de companheiro que você procura</string>
+
+    <string name="pet_size_subtitle">Pense no espaço que você tem em casa</string>
+
+    <string name="pet_age_subtitle">Cada fase da vida tem seu encanto</string>
+
+    <string name="pet_gender_subtitle">Apenas para ajudar você a encontrar seu par ideal</string>
 </resources>

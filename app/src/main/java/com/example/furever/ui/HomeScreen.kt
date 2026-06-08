@@ -180,13 +180,13 @@ fun HomeScreen(
                             .padding(horizontal = 20.dp, vertical = 16.dp)
                     ) {
                         Text(
-                            "Hola, $nombre",
+                             stringResource(R.string.home_greetings, nombre),
                             fontSize   = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color      = Color(0xFF3E2723)
                         )
                         Text(
-                            "Encontrá tu compañero ideal",
+                            stringResource(R.string.login_message),
                             fontSize = 14.sp,
                             color    = Color(0xFF9E9E9E)
                         )
@@ -196,7 +196,7 @@ fun HomeScreen(
                 if (recentPets.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title       = "Recién llegados",
+                            title       = stringResource(R.string.new_comers),
                             count       = recentPets.size,
                             icon        = Icons.Rounded.AutoAwesome,
                             iconTint    = Color(0xFFF57C00),
@@ -225,7 +225,7 @@ fun HomeScreen(
                 if (dogs.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title       = "Perros",
+                            title       = stringResource(R.string.dogs),
                             count       = dogs.size,
                             icon        = Icons.Rounded.Pets,
                             iconTint    = Color(0xFF388E3C),
@@ -254,7 +254,7 @@ fun HomeScreen(
                 if (puppies.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title       = "Cachorros",
+                            title       = stringResource(R.string.puppies),
                             count       = puppies.size,
                             icon        = Icons.Rounded.CrueltyFree,
                             iconTint    = Color(0xFF7B1FA2),
@@ -283,7 +283,7 @@ fun HomeScreen(
                 if (cats.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title       = "Gatos",
+                            title       = stringResource(R.string.cats),
                             count       = cats.size,
                             icon        = Icons.Rounded.Pets,
                             iconTint    = Color(0xFFC62828),
@@ -312,7 +312,7 @@ fun HomeScreen(
                 if (others.isNotEmpty()) {
                     item {
                         SectionHeader(
-                            title       = "Otros",
+                            title       = stringResource(R.string.others),
                             count       = others.size,
                             icon        = Icons.Rounded.Pets,
                             iconTint    = Color(0xFF5C4033),
@@ -467,8 +467,8 @@ private fun PetCardHorizontal(
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        if (pet.ageGroup.isNotEmpty()) MiniChip(pet.ageGroup, Icons.Rounded.Cake)
-                        if (pet.size.isNotEmpty())     MiniChip(pet.size,     Icons.Rounded.Straighten)
+                        if (pet.ageGroup.isNotEmpty()) MiniChip(getTranslation(pet.ageGroup), Icons.Rounded.Cake)
+                        if (pet.size.isNotEmpty())     MiniChip(getTranslation(pet.size),     Icons.Rounded.Straighten)
                     }
                     if (pet.city.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -561,7 +561,7 @@ private fun PetCardVertical(
                     )
                     Text(
                         buildString {
-                            append(pet.species)
+                            append(getTranslation(pet.species))
                             if (pet.breed.isNotEmpty()) append(" · ${pet.breed}")
                         },
                         fontSize = 13.sp,
@@ -569,9 +569,9 @@ private fun PetCardVertical(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        if (pet.gender.isNotEmpty())   MiniChip(pet.gender,   Icons.Rounded.Person)
-                        if (pet.ageGroup.isNotEmpty()) MiniChip(pet.ageGroup, Icons.Rounded.Cake)
-                        if (pet.size.isNotEmpty())     MiniChip(pet.size,     Icons.Rounded.Straighten)
+                        if (pet.gender.isNotEmpty())   MiniChip(getTranslation(pet.gender) ,   Icons.Rounded.Person)
+                        if (pet.ageGroup.isNotEmpty()) MiniChip(getTranslation(pet.ageGroup), Icons.Rounded.Cake)
+                        if (pet.size.isNotEmpty())     MiniChip(getTranslation(pet.size),     Icons.Rounded.Straighten)
                     }
                     if (pet.city.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -637,3 +637,4 @@ private fun MiniChip(label: String, icon: ImageVector? = null) {
         }
     }
 }
+

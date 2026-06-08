@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ import coil.compose.AsyncImage
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
-
+import com.example.furever.R
 // ── Modelos ───────────────────────────────────────────────────────────────────
 
 private data class WizardOption(
@@ -46,8 +47,8 @@ private data class WizardOption(
 
 private data class WizardStep(
     val key: String,
-    val question: String,
-    val subtitle: String,
+    val question: Int,
+    val subtitle: Int,
     val headerEmoji: String,
     val headerBgColor: Color,
     val options: List<WizardOption>
@@ -56,8 +57,8 @@ private data class WizardStep(
 private val wizardSteps = listOf(
     WizardStep(
         key           = "species",
-        question      = "¿Qué mascota te imaginás?",
-        subtitle      = "Elegí el tipo de compañero que buscás",
+        question      = R.string.prepered_pet_type,
+        subtitle      = R.string.pet_type_subtitle,
         headerEmoji   = "🐾",
         headerBgColor = Color(0xFFEDE0D4),
         options       = listOf(
@@ -69,8 +70,8 @@ private val wizardSteps = listOf(
     ),
     WizardStep(
         key           = "size",
-        question      = "¿De qué tamaño lo imaginás?",
-        subtitle      = "Pensá en el espacio que tenés en casa",
+        question      = R.string.prepered_pet_size,
+        subtitle      = R.string.pet_size_subtitle,
         headerEmoji   = "📏",
         headerBgColor = Color(0xFFE1F5FE),
         options       = listOf(
@@ -82,8 +83,8 @@ private val wizardSteps = listOf(
     ),
     WizardStep(
         key           = "age",
-        question      = "¿Qué etapa de vida preferís?",
-        subtitle      = "Cada edad tiene su encanto",
+        question      = R.string.prepered_pet_life_stage,
+        subtitle      = R.string.pet_age_subtitle,
         headerEmoji   = "🎂",
         headerBgColor = Color(0xFFFFF9C4),
         options       = listOf(
@@ -96,8 +97,8 @@ private val wizardSteps = listOf(
     ),
     WizardStep(
         key           = "gender",
-        question      = "¿Tenés preferencia de género?",
-        subtitle      = "Solo para ayudarte a encontrar tu match ideal",
+        question      = R.string.prepered_pet_gender,
+        subtitle      = R.string.pet_gender_subtitle,
         headerEmoji   = "💙",
         headerBgColor = Color(0xFFE3F2FD),
         options       = listOf(
@@ -162,7 +163,7 @@ fun PreferencesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        if (showResults) "Tu match perfecto" else "¿Cómo lo imaginás?",
+                        if (showResults) "Tu match perfecto" else stringResource(R.string.prepered_pet_description),
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 20.sp
                     )
@@ -318,7 +319,7 @@ private fun WizardView(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    s.question,
+                    text = stringResource(s.question),
                     fontSize   = 19.sp,
                     fontWeight = FontWeight.Bold,
                     color      = Color(0xFF3E2723),
@@ -327,7 +328,7 @@ private fun WizardView(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    s.subtitle,
+                    text = stringResource(s.subtitle),
                     fontSize  = 12.sp,
                     color     = Color(0xFF9E9E9E),
                     textAlign = TextAlign.Center

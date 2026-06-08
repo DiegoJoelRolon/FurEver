@@ -27,6 +27,9 @@
     <string name="search_hint">Search by name, breed or city</string>
     <string name="profile_button">Profile</string>
     <string name="home_button">Feed</string>
+    <string name="dogs">Dogs</string>
+    <string name="others">Others</string>
+    <string name="home_greetings">Hello %1$s</string>
     <string name="settings_language">App Language</string>
     <string name="perfil">My Profile</string>
     <string name="upload_pet_title">Upload Pet</string>
@@ -45,7 +48,8 @@
         <item quantity="other">%d published pets</item>
     </plurals>
 
-    <string name="language">Language</string>
+    <string name="take_photo">Take a photo</string>
+    <string name="my_match_button">My match</string>
     <string name="search_all">All</string>
     <string name="search_dog">Dog</string>
     <string name="search_cat">Cat</string>
@@ -62,4 +66,18 @@
     <string name="puppy_age_option">Puppy</string>
     <string name="young_age_option">Young</string>
     <string name="adult_age_option">Adult</string>
+    <string name="new_comers">New comers</string>
+    <string name="puppies">Puppies</string>
+    <string name="cats">Cats</string>
+    <string name="favourites_button">Favoritos</string>
+    <string name="prepered_pet_type">What kind of pet are you looking for?</string>
+    <string name="prepered_pet_size">What size would you prefer?</string>
+    <string name="prepered_pet_gender">Do you have a gender preference?</string>
+    <string name="prepered_pet_description">How do you picture your ideal pet?</string>
+    <string name="pet_gender_subtitle">Just to help you find your ideal match</string>
+    <string name="language">Language</string>
+    <string name="prepered_pet_life_stage">Which life stage do you prefer?</string>
+    <string name="pet_type_subtitle">Choose the type of companion you\'re looking for</string>
+    <string name="pet_size_subtitle">Think about the space you have at home</string>
+    <string name="pet_age_subtitle">Every stage of life has its own charm</string>
 </resources>

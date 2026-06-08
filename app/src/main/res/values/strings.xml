@@ -25,13 +25,16 @@
     <string name="search_cat">Gato</string>
     <string name="search_other">Otro</string>
     <string name="search_hint">Busca por nombre, raza o ciudad…</string>
-    <string name="profile_button">Perfil</string>
-    <string name="home_button">Inicio</string>
     <string name="delete_confirmation_first">¿Eliminar publicación?</string>
     <string name="delete_confirmation_second">¿Estás seguro de que quieres borrar a %1$s? Esta acción no se puede deshacer.</string>
     <string name="delete_button">Eliminar</string>
+    <string name="new_comers">Recién llegados</string>
+    <string name="puppies">Cachorros</string>
+    <string name="cats">Gatos</string>
+    <string name="dogs">Perros</string>
+    <string name="others">Otros</string>
+    <string name="home_greetings">Hola %1$s</string>
     <!--ProfileScreen-->
-    <!-- Agrega esto en la sección de ProfileScreen -->
     <string name="settings_language">Idioma de la aplicación</string>
     <string name="perfil">Mi Perfil</string>
     <plurals name="published_pets">
@@ -44,6 +47,7 @@
     <string name="my_posts">Mis publicaciones</string>
     <string name="empty_posts">Todavía no publicaste ninguna mascota</string>
     <string name="sign_out">Cerrar sesión</string>
+
     <!--UploadPetScreen-->
     <string name="upload_pet_title">Publicar Mascota</string>
     <string name="pet_photo">Foto de la mascota</string>
@@ -68,6 +72,26 @@
     <string name="adult_age_option">Adulto</string>
     <string name="senior_age_option">Senior</string>
     <string name="upload_button">Publicar para Adopción</string>
+    <string name="take_photo">Sacar una foto</string>
+
+    <!--Navigation-->
+    <string name="profile_button">Perfil</string>
+    <string name="home_button">Inicio</string>
+    <string name="favourites_button">Favoritos</string>
+    <string name="my_match_button">Mi match</string>
+
+    <!--PreferencesScreen-->
+    <string name="prepered_pet_type">¿Qué mascota te imaginás?</string>
+    <string name="prepered_pet_size">¿De qué tamaño lo imaginás?</string>
+    <string name="prepered_pet_life_stage">¿Qué etapa de vida preferís?</string>
+    <string name="prepered_pet_gender">¿Tenés preferencia de género?</string>
+    <string name="prepered_pet_description">¿Cómo lo imaginás?</string>
+
+    <string name="pet_type_subtitle">Elegí el tipo de compañero que buscás</string>
+    <string name="pet_size_subtitle">Pensá en el espacio que tenés en casa</string>
+    <string name="pet_age_subtitle">Cada edad tiene su encanto</string>
+    <string name="pet_gender_subtitle">Solo para ayudarte a encontrar tu match ideal</string>
+
 
     <string name="language">Idioma</string>
 
