@@ -40,6 +40,8 @@ import com.example.furever.auth.AuthViewModel
 import com.example.furever.models.PetPost
 import com.example.furever.utils.LanguageManager
 import com.example.furever.viewmodels.PetViewModel
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.rounded.Pets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +49,7 @@ fun ProfileScreen(
     authViewModel: AuthViewModel,
     petViewModel: PetViewModel,
     onNavigateToPetDetail: (String) -> Unit,
+    onNavigateToRequests: () -> Unit,   // ← nuevo
     onSignOut: () -> Unit
 ) {
     val context = LocalContext.current
@@ -392,6 +395,85 @@ fun ProfileScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // ── Solicitudes recibidas ─────────────────────────────────────────────
+            item {
+                val pendingRequests by petViewModel.pendingRequests.collectAsStateWithLifecycle()
+
+                LaunchedEffect(Unit) { petViewModel.fetchPendingRequests() }
+
+                Card(
+                    modifier  = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape     = RoundedCornerShape(14.dp),
+                    onClick   = onNavigateToRequests,
+                    colors    = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Row(
+                        modifier          = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            modifier         = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    if (pendingRequests.isNotEmpty()) Color(0xFFFFEBEE)
+                                    else Color(0xFFEDE0D4)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector        = Icons.Rounded.Pets,
+                                contentDescription = null,
+                                tint               = if (pendingRequests.isNotEmpty())
+                                    Color(0xFFC62828) else Color(0xFF5C4033),
+                                modifier           = Modifier.size(20.dp)
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Solicitudes de adopción",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize   = 14.sp,
+                                color      = Color(0xFF3E2723)
+                            )
+                            Text(
+                                if (pendingRequests.isNotEmpty())
+                                    "${pendingRequests.size} solicitud${if (pendingRequests.size != 1) "es" else ""} pendiente${if (pendingRequests.size != 1) "s" else ""}"
+                                else
+                                    "Sin solicitudes pendientes",
+                                fontSize = 12.sp,
+                                color    = if (pendingRequests.isNotEmpty())
+                                    Color(0xFFC62828) else Color(0xFF9E9E9E)
+                            )
+                        }
+                        if (pendingRequests.isNotEmpty()) {
+                            Surface(
+                                shape = CircleShape,
+                                color = Color(0xFFC62828)
+                            ) {
+                                Text(
+                                    "${pendingRequests.size}",
+                                    modifier   = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    fontSize   = 12.sp,
+                                    color      = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector        = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint               = Color(0xFFBCAAA4),
+                            modifier           = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
 
             // ── Título mis publicaciones ───────────────────────────────────

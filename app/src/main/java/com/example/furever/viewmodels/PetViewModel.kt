@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.File
+import com.example.furever.models.AdoptionRequest
 
 class PetViewModel : ViewModel() {
 
@@ -273,5 +274,107 @@ class PetViewModel : ViewModel() {
             .delete()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { onError(it.message ?: "Error") }
+    }
+
+    // ── Solicitudes de adopción ───────────────────────────────────────────────────
+
+    private val _pendingRequests = MutableStateFlow<List<AdoptionRequest>>(emptyList())
+    val pendingRequests: StateFlow<List<AdoptionRequest>> = _pendingRequests
+
+    // Escuchar solicitudes recibidas (donde soy el dueño)
+    fun fetchPendingRequests() {
+        val myEmail = auth.currentUser?.email ?: return
+        db.collection("adoptionRequests")
+            .whereEqualTo("ownerId", myEmail)
+            .whereEqualTo("status", "pending")
+            .addSnapshotListener { snapshot, _ ->
+                _pendingRequests.value =
+                    snapshot?.toObjects(AdoptionRequest::class.java) ?: emptyList()
+            }
+    }
+
+    // Enviar solicitud de adopción
+    fun sendAdoptionRequest(
+        pet: PetPost,
+        onSuccess: () -> Unit = {},
+        onError: (String) -> Unit = {}
+    ) {
+        val requesterEmail = auth.currentUser?.email ?: return
+        val requesterUid   = auth.currentUser?.uid   ?: return
+
+        // Verificar que no exista ya una solicitud pendiente
+        db.collection("adoptionRequests")
+            .whereEqualTo("petId",      pet.id)
+            .whereEqualTo("requesterId", requesterEmail)
+            .whereEqualTo("status",     "pending")
+            .get()
+            .addOnSuccessListener { existing ->
+                if (!existing.isEmpty) {
+                    onError("Ya enviaste una solicitud para esta mascota")
+                    return@addOnSuccessListener
+                }
+
+                // Obtener nombre del solicitante
+                db.collection("users").document(requesterUid).get()
+                    .addOnSuccessListener { doc ->
+                        val name = "${doc.getString("name") ?: ""} ${doc.getString("lastname") ?: ""}".trim()
+                        val ref  = db.collection("adoptionRequests").document()
+                        val request = AdoptionRequest(
+                            id            = ref.id,
+                            petId         = pet.id,
+                            petName       = pet.name,
+                            petImageUrl   = pet.imageUrl,
+                            requesterId   = requesterEmail,
+                            requesterName = name.ifEmpty { requesterEmail },
+                            ownerId       = pet.ownerId,
+                            status        = "pending",
+                            timestamp     = System.currentTimeMillis()
+                        )
+                        ref.set(request)
+                            .addOnSuccessListener { onSuccess() }
+                            .addOnFailureListener { onError(it.message ?: "Error") }
+                    }
+            }
+            .addOnFailureListener { onError(it.message ?: "Error") }
+    }
+
+    // Aceptar solicitud → adopta la mascota
+    fun acceptRequest(request: AdoptionRequest, onSuccess: () -> Unit = {}) {
+        val batch = db.batch()
+
+        // Actualizar estado de la solicitud
+        val reqRef = db.collection("adoptionRequests").document(request.id)
+        batch.update(reqRef, "status", "accepted")
+
+        // Marcar mascota como adoptada
+        val petRef = db.collection("pets").document(request.petId)
+        batch.update(petRef, mapOf(
+            "adoptedStatus" to "Adoptado",
+            "adopterEmail"  to request.requesterId
+        ))
+
+        batch.commit().addOnSuccessListener { onSuccess() }
+    }
+
+    // Rechazar solicitud
+    fun rejectRequest(request: AdoptionRequest, onSuccess: () -> Unit = {}) {
+        db.collection("adoptionRequests").document(request.id)
+            .update("status", "rejected")
+            .addOnSuccessListener { onSuccess() }
+    }
+
+    // Verificar si ya envié una solicitud para esta mascota
+    private val _myRequestStatus = MutableStateFlow<String>("")
+    val myRequestStatus: StateFlow<String> = _myRequestStatus
+
+    fun checkMyRequestStatus(petId: String) {
+        val myEmail = auth.currentUser?.email ?: return
+        db.collection("adoptionRequests")
+            .whereEqualTo("petId",       petId)
+            .whereEqualTo("requesterId", myEmail)
+            .addSnapshotListener { snapshot, _ ->
+                val request = snapshot?.toObjects(AdoptionRequest::class.java)?.firstOrNull()
+                _myRequestStatus.value = request?.status ?: ""
+            }
     }
 }

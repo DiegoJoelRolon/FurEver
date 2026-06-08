@@ -42,7 +42,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Schedule
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetDetailScreen(
@@ -235,11 +236,11 @@ fun PetDetailScreen(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier              = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     if (pet.gender.isNotEmpty())
                         InfoChip(
-                            icon  = Icons.Rounded.Person,
+                            icon = Icons.Rounded.Person,
                             label = stringResource(R.string.pet_gender),
                             value = getTranslation(pet.gender),
                             color = Color(0xFFE3F2FD),
@@ -248,7 +249,7 @@ fun PetDetailScreen(
                         )
                     if (pet.ageGroup.isNotEmpty())
                         InfoChip(
-                            icon  = Icons.Rounded.Cake,
+                            icon = Icons.Rounded.Cake,
                             label = stringResource(R.string.pet_age),
                             value = getTranslation(pet.ageGroup),
                             color = Color(0xFFFFF9C4),
@@ -257,7 +258,7 @@ fun PetDetailScreen(
                         )
                     if (pet.size.isNotEmpty())
                         InfoChip(
-                            icon  = Icons.Rounded.Straighten,
+                            icon = Icons.Rounded.Straighten,
                             label = stringResource(R.string.pet_size),
                             value = getTranslation(pet.size),
                             color = Color(0xFFE8F5E9),
@@ -275,20 +276,20 @@ fun PetDetailScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier          = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector        = Icons.Default.LocationOn,
+                                imageVector = Icons.Default.LocationOn,
                                 contentDescription = null,
-                                tint               = Color(0xFF5C4033),
-                                modifier           = Modifier.size(18.dp)
+                                tint = Color(0xFF5C4033),
+                                modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 pet.city,
-                                fontSize   = 14.sp,
-                                color      = Color(0xFF5C4033),
+                                fontSize = 14.sp,
+                                color = Color(0xFF5C4033),
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -301,23 +302,23 @@ fun PetDetailScreen(
                 SectionCard(title = "Sobre ${pet.name}", icon = Icons.Rounded.Pets) {
                     Text(
                         pet.description.ifEmpty { "Sin descripción disponible." },
-                        color      = Color(0xFF616161),
+                        color = Color(0xFF616161),
                         lineHeight = 22.sp,
-                        fontSize   = 14.sp
+                        fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector        = Icons.Default.Person,
+                            imageVector = Icons.Default.Person,
                             contentDescription = null,
-                            tint               = Color(0xFFBCAAA4),
-                            modifier           = Modifier.size(13.dp)
+                            tint = Color(0xFFBCAAA4),
+                            modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             stringResource(R.string.published_by, pet.ownerId),
                             fontSize = 12.sp,
-                            color    = Color(0xFFBCAAA4)
+                            color = Color(0xFFBCAAA4)
                         )
                     }
                 }
@@ -328,16 +329,25 @@ fun PetDetailScreen(
                     SectionCard(title = "Ubicación", icon = Icons.Rounded.LocationOn) {
                         OutlinedButton(
                             onClick = {
-                                val uri    = Uri.parse("geo:${pet.latitude},${pet.longitude}?q=${pet.latitude},${pet.longitude}(${pet.name})")
+                                val uri =
+                                    Uri.parse("geo:${pet.latitude},${pet.longitude}?q=${pet.latitude},${pet.longitude}(${pet.name})")
                                 val intent = Intent(Intent.ACTION_VIEW, uri)
                                 context.startActivity(intent)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape    = RoundedCornerShape(10.dp),
-                            colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
-                            border   = BorderStroke(1.5.dp, Color(0xFF5C4033))
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color(
+                                    0xFF5C4033
+                                )
+                            ),
+                            border = BorderStroke(1.5.dp, Color(0xFF5C4033))
                         ) {
-                            Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Ver en Google Maps", fontWeight = FontWeight.Medium)
                         }
@@ -351,16 +361,24 @@ fun PetDetailScreen(
                         Text(
                             "Esta mascota ya encontró su hogar ❤️",
                             fontWeight = FontWeight.SemiBold,
-                            color      = Color(0xFF3E2723),
-                            fontSize   = 14.sp
+                            color = Color(0xFF3E2723),
+                            fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         HorizontalDivider(color = Color(0xFFD7CCC8))
                         Spacer(modifier = Modifier.height(12.dp))
-                        ContactRow(icon = Icons.Default.Email, label = "Email", value = pet.adopterEmail)
+                        ContactRow(
+                            icon = Icons.Default.Email,
+                            label = "Email",
+                            value = pet.adopterEmail
+                        )
                         if (pet.adopterPhone.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(10.dp))
-                            ContactRow(icon = Icons.Default.Phone, label = "Teléfono", value = pet.adopterPhone)
+                            ContactRow(
+                                icon = Icons.Default.Phone,
+                                label = "Teléfono",
+                                value = pet.adopterPhone
+                            )
                         }
                     }
                 }
@@ -372,12 +390,12 @@ fun PetDetailScreen(
                         Text(
                             "¿Te interesa esta mascota? Escribile directamente:",
                             fontSize = 13.sp,
-                            color    = Color(0xFF9E9E9E)
+                            color = Color(0xFF9E9E9E)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         if (pet.ownerId.isNotEmpty()) {
                             ContactRow(
-                                icon  = Icons.Default.Email,
+                                icon = Icons.Default.Email,
                                 label = "Email",
                                 value = pet.ownerId
                             )
@@ -385,7 +403,7 @@ fun PetDetailScreen(
                         if (pet.ownerPhone.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(10.dp))
                             ContactRow(
-                                icon  = Icons.Default.Phone,
+                                icon = Icons.Default.Phone,
                                 label = "Teléfono",
                                 value = pet.ownerPhone
                             )
@@ -395,33 +413,184 @@ fun PetDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ── Botón adoptar ─────────────────────────────────────────────
+                // ── Botón solicitar adopción ──────────────────────────────────────────────
                 if (isAvailable) {
-                    Button(
-                        onClick  = { showConfirmDialog = true },
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
-                        shape    = RoundedCornerShape(16.dp),
-                        colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033))
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Rounded.Favorite,
-                            contentDescription = null,
-                            modifier           = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            stringResource(R.string.adopt_button),
-                            fontWeight = FontWeight.Bold,
-                            fontSize   = 16.sp
-                        )
+                    val myRequestStatus by petViewModel.myRequestStatus.collectAsStateWithLifecycle()
+                    var showRequestDialog by remember { mutableStateOf(false) }
+                    var requestSent by remember { mutableStateOf(false) }
+                    var requestError by remember { mutableStateOf("") }
+
+                    LaunchedEffect(pet.id) {
+                        petViewModel.checkMyRequestStatus(pet.id)
+                    }
+
+                    // No mostrar el botón si el usuario es el dueño
+                    val isOwner = currentUser?.email == pet.ownerId
+
+                    if (!isOwner) {
+                        when (myRequestStatus) {
+                            "pending" -> {
+                                // Ya envió solicitud
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = Color(0xFFFFF3E0)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Schedule,
+                                            contentDescription = null,
+                                            tint = Color(0xFFF57C00),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Column {
+                                            Text(
+                                                "Solicitud enviada",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color(0xFFF57C00),
+                                                fontSize = 14.sp
+                                            )
+                                            Text(
+                                                "Esperando respuesta del dueño",
+                                                fontSize = 12.sp,
+                                                color = Color(0xFF9E9E9E)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            "accepted" -> {
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = Color(0xFFE8F5E9)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.CheckCircle,
+                                            contentDescription = null,
+                                            tint = Color(0xFF388E3C),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Text(
+                                            "¡Solicitud aceptada! El dueño te va a contactar.",
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF388E3C),
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                // Sin solicitud — mostrar botón
+                                if (showRequestDialog) {
+                                    AlertDialog(
+                                        onDismissRequest = { showRequestDialog = false },
+                                        shape = RoundedCornerShape(20.dp),
+                                        containerColor = Color.White,
+                                        title = {
+                                            Text(
+                                                "Solicitar adopción de ${pet.name}",
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFF3E2723),
+                                                fontSize = 18.sp
+                                            )
+                                        },
+                                        text = {
+                                            Text(
+                                                "Se le enviará una solicitud al dueño. Si la acepta, recibirás su contacto para coordinar la adopción.",
+                                                color = Color(0xFF616161),
+                                                lineHeight = 22.sp
+                                            )
+                                        },
+                                        confirmButton = {
+                                            Button(
+                                                onClick = {
+                                                    petViewModel.sendAdoptionRequest(
+                                                        pet = pet,
+                                                        onSuccess = {
+                                                            requestSent = true
+                                                            requestError = ""
+                                                            showRequestDialog = false
+                                                        },
+                                                        onError = { err ->
+                                                            requestError = err
+                                                            showRequestDialog = false
+                                                        }
+                                                    )
+                                                },
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color(0xFF5C4033)
+                                                ),
+                                                shape = RoundedCornerShape(10.dp)
+                                            ) {
+                                                Text(
+                                                    "Enviar solicitud",
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(onClick = { showRequestDialog = false }) {
+                                                Text("Cancelar", color = Color(0xFF9E9E9E))
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (requestError.isNotEmpty()) {
+                                    Surface(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = Color(0xFFFFEBEE)
+                                    ) {
+                                        Text(
+                                            requestError,
+                                            modifier = Modifier.padding(12.dp),
+                                            color = Color(0xFFC62828),
+                                            fontSize = 13.sp
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+
+                                Button(
+                                    onClick = { showRequestDialog = true },
+                                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xFF5C4033
+                                        )
+                                    )
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Favorite,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        "Solicitar adopción",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-        }
-    }
-}
+            }}}}
 
 // ── Componentes ───────────────────────────────────────────────────────────────
 

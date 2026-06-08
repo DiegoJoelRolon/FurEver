@@ -169,14 +169,21 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                     petViewModel  = petViewModel
                 )
             }
+            // En Routes.kt ya agregaste ADOPTION_REQUESTS
+
+            // En el NavHost, agregar:
+            composable(Routes.ADOPTION_REQUESTS) {
+                AdoptionRequestsScreen(petViewModel = petViewModel)
+            }
+
+            // En el composable de PROFILE, agregar el parámetro:
             composable(Routes.PROFILE) {
                 ProfileScreen(
                     authViewModel         = authViewModel,
                     petViewModel          = petViewModel,
-                    onNavigateToPetDetail = { petId ->
-                        navController.navigate("pet_detail/$petId")
-                    },
-                    onSignOut = { navController.navigate(Routes.LOGIN) { popUpTo(0) } }
+                    onNavigateToPetDetail = { petId -> navController.navigate("pet_detail/$petId") },
+                    onNavigateToRequests  = { navController.navigate(Routes.ADOPTION_REQUESTS) },  // ← nuevo
+                    onSignOut             = { navController.navigate(Routes.LOGIN) { popUpTo(0) } }
                 )
             }
             composable(Routes.UPLOAD_PET) {
