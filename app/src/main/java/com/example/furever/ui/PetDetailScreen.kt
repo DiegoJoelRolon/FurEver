@@ -301,7 +301,7 @@ fun PetDetailScreen(
                 // ── Sección Sobre ─────────────────────────────────────────────
                 SectionCard(title = "Sobre ${pet.name}", icon = Icons.Rounded.Pets) {
                     Text(
-                        pet.description.ifEmpty { "Sin descripción disponible." },
+                        pet.description.ifEmpty { stringResource(R.string.no_description)},
                         color = Color(0xFF616161),
                         lineHeight = 22.sp,
                         fontSize = 14.sp
@@ -359,7 +359,7 @@ fun PetDetailScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     SectionCard(title = "Datos del adoptante", icon = Icons.Rounded.Favorite) {
                         Text(
-                            "Esta mascota ya encontró su hogar ❤️",
+                            stringResource(R.string.adopt_button_disabled)+"❤\uFE0F",
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFF3E2723),
                             fontSize = 14.sp
@@ -388,7 +388,7 @@ fun PetDetailScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     SectionCard(title = "Contactar al dueño", icon = Icons.Rounded.Person) {
                         Text(
-                            "¿Te interesa esta mascota? Escribile directamente:",
+                            stringResource(R.string.interested_pet),
                             fontSize = 13.sp,
                             color = Color(0xFF9E9E9E)
                         )
@@ -482,7 +482,7 @@ fun PetDetailScreen(
                                             modifier = Modifier.size(20.dp)
                                         )
                                         Text(
-                                            "¡Solicitud aceptada! El dueño te va a contactar.",
+                                            stringResource(R.string.request_accepted),
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF388E3C),
                                             fontSize = 14.sp
@@ -500,7 +500,7 @@ fun PetDetailScreen(
                                         containerColor = Color.White,
                                         title = {
                                             Text(
-                                                "Solicitar adopción de ${pet.name}",
+                                                stringResource(R.string.request_adoption_title, pet.name),
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color(0xFF3E2723),
                                                 fontSize = 18.sp
@@ -508,7 +508,7 @@ fun PetDetailScreen(
                                         },
                                         text = {
                                             Text(
-                                                "Se le enviará una solicitud al dueño. Si la acepta, recibirás su contacto para coordinar la adopción.",
+                                                stringResource(R.string.request_adoption_message),
                                                 color = Color(0xFF616161),
                                                 lineHeight = 22.sp
                                             )
@@ -535,14 +535,14 @@ fun PetDetailScreen(
                                                 shape = RoundedCornerShape(10.dp)
                                             ) {
                                                 Text(
-                                                    "Enviar solicitud",
+                                                    stringResource(R.string.send_request),
                                                     fontWeight = FontWeight.SemiBold
                                                 )
                                             }
                                         },
                                         dismissButton = {
                                             TextButton(onClick = { showRequestDialog = false }) {
-                                                Text("Cancelar", color = Color(0xFF9E9E9E))
+                                                Text(stringResource(R.string.cancel), color = Color(0xFF9E9E9E))
                                             }
                                         }
                                     )
@@ -581,7 +581,7 @@ fun PetDetailScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        "Solicitar adopción",
+                                        stringResource(R.string.request_adoption),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp
                                     )

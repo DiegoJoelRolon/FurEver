@@ -112,14 +112,13 @@ fun FavoritesScreen(
                 items(favoritePets) { pet ->
                     val isFav = currentUser?.favorites?.contains(pet.id) ?: false
 
-                    // ✅ FIX: Card sin onClick
                     Card(
                         modifier  = Modifier.fillMaxWidth(),
                         shape     = RoundedCornerShape(16.dp),
                         colors    = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(2.dp)
                     ) {
-                        // ✅ FIX: click de navegación en el Row, no en la Card
+
                         Row(
                             modifier          = Modifier
                                 .clickable { onNavigateToPetDetail(pet.id) }
@@ -184,8 +183,6 @@ fun FavoritesScreen(
                                     )
                                 }
                             }
-
-                            // ✅ FIX: IconButton maneja el click independientemente del Row
                             IconButton(
                                 onClick  = { authViewModel.toggleFavorite(pet.id) },
                                 modifier = Modifier

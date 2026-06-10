@@ -59,7 +59,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated ->
-                navController.navigate(Routes.HOME) { popUpTo(0) }  // ← sacar el if de onboarding
+                navController.navigate(Routes.HOME) { popUpTo(0) }
             is AuthState.Unauthenticated ->
                 navController.navigate(Routes.LOGIN) { popUpTo(0) }
             else -> Unit
@@ -104,11 +104,11 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                         },
                         icon  = {
                             Icon(
-                                imageVector        = Icons.Filled.Search,   // ícono más representativo
+                                imageVector        = Icons.Filled.Search,
                                 contentDescription = "Buscar mi match"
                             )
                         },
-                        label  = { Text(stringResource(R.string.my_match_button)) },   // ← label nuevo
+                        label  = { Text(stringResource(R.string.my_match_button)) },
                         colors = navBarColors()
                     )
 
@@ -169,14 +169,12 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                     petViewModel  = petViewModel
                 )
             }
-            // En Routes.kt ya agregaste ADOPTION_REQUESTS
 
-            // En el NavHost, agregar:
             composable(Routes.ADOPTION_REQUESTS) {
                 AdoptionRequestsScreen(petViewModel = petViewModel)
             }
 
-            // En el composable de PROFILE, agregar el parámetro:
+
             composable(Routes.PROFILE) {
                 ProfileScreen(
                     authViewModel         = authViewModel,

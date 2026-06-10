@@ -136,7 +136,7 @@ fun ProfileScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) { Text("Elegir de la galería") }
+                    ) { Text(stringResource(R.string.choose_from_gallery)) }
 
                     OutlinedButton(
                         onClick = {
@@ -147,13 +147,13 @@ fun ProfileScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF5C4033)),
                         border = BorderStroke(1.5.dp, Color(0xFF5C4033))
-                    ) { Text("Sacar una foto") }
+                    ) { Text(stringResource(R.string.take_photo)) }
                 }
             },
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { showImageOptions = false }) {
-                    Text("Cancelar", color = Color(0xFF9E9E9E))
+                    Text(stringResource(R.string.cancel), color = Color(0xFF9E9E9E))
                 }
             }
         )
@@ -699,7 +699,7 @@ private fun MyPetCard(
                     containerColor = Color.White
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Editar", color = Color(0xFF3E2723)) },
+                        text = { Text(stringResource(R.string.edit), color = Color(0xFF3E2723)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Edit,
@@ -714,7 +714,7 @@ private fun MyPetCard(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Eliminar", color = Color(0xFFC62828)) },
+                        text = { Text(stringResource(R.string.delete_button), color = Color(0xFFC62828)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -760,7 +760,7 @@ fun EditPetDialog(
         containerColor = Color.White,
         title = {
             Text(
-                "Editar ${pet.name}",
+                stringResource(R.string.edit_pet, pet.name),
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF3E2723)
             )
@@ -782,14 +782,14 @@ fun EditPetDialog(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(if (newImageUri != null) "Foto seleccionada" else "Cambiar foto")
+                    Text(if (newImageUri != null)  stringResource(R.string.selected_photo) else stringResource(R.string.change_photo))
                 }
 
                 // Nombre
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre") },
+                    label = { Text(stringResource(R.string.pet_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -802,7 +802,7 @@ fun EditPetDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Descripción") },
+                    label = { Text(stringResource(R.string.pet_description)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     shape = RoundedCornerShape(12.dp),
@@ -816,7 +816,7 @@ fun EditPetDialog(
                 OutlinedTextField(
                     value = city,
                     onValueChange = { city = it },
-                    label = { Text("Ciudad") },
+                    label = { Text(stringResource(R.string.city)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -878,12 +878,12 @@ fun EditPetDialog(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033)),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Guardar", color = Color.White)
+                Text(stringResource(R.string.save), color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = Color(0xFF9E9E9E))
+                Text(stringResource(R.string.cancel), color = Color(0xFF9E9E9E))
             }
         }
     )

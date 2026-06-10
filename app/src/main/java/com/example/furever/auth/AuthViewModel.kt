@@ -111,7 +111,6 @@ class AuthViewModel : ViewModel() {
         val newFavs = if (isAlreadyFav) currentFavs - petId else currentFavs + petId
         _currentUser.value = _currentUser.value?.copy(favorites = newFavs)
 
-        // set con merge en lugar de update — crea el doc si no existe
         db.collection("users").document(uid)
             .set(mapOf("favorites" to newFavs), com.google.firebase.firestore.SetOptions.merge())
             .addOnSuccessListener {

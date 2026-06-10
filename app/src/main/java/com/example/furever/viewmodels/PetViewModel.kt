@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import java.io.File
 import com.example.furever.models.AdoptionRequest
+import com.example.furever.notifications.NotificationHelper
+import com.google.firebase.firestore.DocumentChange
 
 class PetViewModel : ViewModel() {
 
@@ -147,6 +149,44 @@ class PetViewModel : ViewModel() {
         return tempFile
     }
 
+    // ── Notificaciones ────────────────────────────────────────────────────────────
+    private var requestsListener: com.google.firebase.firestore.ListenerRegistration? = null
+
+    fun startListeningForNotifications(context: Context, ownerEmail: String) {
+        requestsListener?.remove()
+
+        Log.d("NOTIF", "Iniciando listener para: $ownerEmail")
+        requestsListener = db.collection("adoptionRequests")
+            .whereEqualTo("ownerId", ownerEmail)
+            .whereEqualTo("status", "pending")
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e("NOTIF", "Error en listener: ${e.message}")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    Log.d("NOTIF", "Cambios detectados: ${snapshot.documentChanges.size}")
+                    for (dc in snapshot.documentChanges) {
+                        if (dc.type == DocumentChange.Type.ADDED) {
+                            val request = dc.document.toObject(AdoptionRequest::class.java)
+                            NotificationHelper.showNotification(
+                                context,
+                                "¡Nueva solicitud!",
+                                "${request.requesterName} quiere adoptar a ${request.petName}"
+                            )
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        requestsListener?.remove()
+    }
+
+//funciones de POstro
     fun uploadPet(context: Context, pet: PetPost, imageUri: Uri? = null) {
         ensureCloudinaryInitialized(context)
         val uid      = auth.currentUser?.uid ?: return
@@ -154,7 +194,7 @@ class PetViewModel : ViewModel() {
         val petRef   = db.collection("pets").document()
 
 
-        // ✅ Primero buscar el teléfono del dueño
+        // Primero buscar el teléfono del dueño
         db.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
                 val ownerPhone = doc.getString("phone") ?: ""
@@ -196,13 +236,13 @@ class PetViewModel : ViewModel() {
         pet: PetPost,
         petRef: com.google.firebase.firestore.DocumentReference,
         usermail: String,
-        ownerPhone: String,  // ← nuevo parámetro
+        ownerPhone: String,
         imageUrl: String
     ) {
         petRef.set(pet.copy(
             id         = petRef.id,
             ownerId    = usermail,
-            ownerPhone = ownerPhone,  // ← guardar teléfono
+            ownerPhone = ownerPhone,
             imageUrl   = imageUrl,
             images     = if (imageUrl.isNotEmpty()) listOf(imageUrl) else emptyList(),
             timestamp  = System.currentTimeMillis()

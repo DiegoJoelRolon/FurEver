@@ -17,7 +17,23 @@
     <string name="about">Sobre %1$s</string>
     <string name="published_by">Publicado por: %1$s</string>
     <string name="adopt_button">Adoptar esta mascota</string>
-    <string name="adopt_button_disabled">Esta mascota ya encontró su hogar</string>
+    <string name="adopt_button_disabled">Esta mascota ya encontró su hogar </string>
+    <string name="no_description">Sin descripción disponible</string>
+    <string name="interested_pet">¿Te interesa esta mascota? Escribile directamente:</string>
+
+    <string name="request_sent">Solicitud enviada</string>
+
+    <string name="waiting_owner_response">Esperando respuesta del dueño</string>
+
+    <string name="request_accepted">¡Solicitud aceptada! El dueño te va a contactar.</string>
+
+    <string name="request_adoption_title">Solicitar adopción de %1$s</string>
+
+    <string name="request_adoption_message">Se le enviará una solicitud al dueño. Si la acepta, recibirás su contacto para coordinar la adopción.</string>
+
+    <string name="send_request">Enviar solicitud</string>
+
+    <string name="request_adoption">Solicitar adopción</string>
     <!--HomeScreen-->
     <string name="add_pet">Agregar mascota</string>
     <string name="search_all">Todas</string>
@@ -53,6 +69,15 @@
         <item quantity="other">%d solicitudes pendientes</item>
     </plurals>
     <string name="no_pending_requests">Sin solicitudes pendientes</string>
+
+    <string name="selected_photo">Foto seleccionada</string>
+
+    <string name="edit_pet">Editar %1$s</string>
+    <string name="edit">Editar</string>
+
+    <string name="status">Estado</string>
+
+    <string name="save">Guardar</string>
 
 
     <!--UploadPetScreen-->
@@ -155,6 +180,25 @@
     <string name="reject">Rechazar</string>
 
     <string name="accept">Aceptar</string>
+
+    <!--RegisterScreen-->
+    <string name="create_account">Crear cuenta</string>
+
+    <string name="complete_your_details">Completá tus datos para continuar</string>
+
+    <string name="first_name">Nombre *</string>
+
+    <string name="last_name">Apellido</string>
+
+    <string name="email_hint">Email *</string>
+
+    <string name="password_hint">Contraseña *</string>
+
+    <string name="phone">Teléfono</string>
+
+    <string name="city">Ciudad</string>
+
+    <string name="already_have_account">¿Ya tenés cuenta? Iniciá sesión</string>
 
     <string name="language">Idioma</string>
 

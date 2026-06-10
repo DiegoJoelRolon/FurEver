@@ -1,5 +1,9 @@
 package com.example.furever.ui
 
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,6 +37,7 @@ import com.example.furever.R
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.models.PetPost
 import com.example.furever.viewmodels.PetViewModel
+import android.Manifest
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +58,29 @@ fun HomeScreen(
     var activeSearch by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) { petViewModel.fetchPets() }
+
+    //Para notificaciontes
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            // El usuario rechazó las notificaciones
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    // LaunchedEffect actual para el listener
+    LaunchedEffect(currentUser?.email) {
+        currentUser?.email?.let { email ->
+            petViewModel.startListeningForNotifications(context, email)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -129,7 +158,9 @@ fun HomeScreen(
         if (activeSearch.isNotEmpty()) {
             if (filteredPets.isEmpty()) {
                 Box(
-                    modifier         = Modifier.fillMaxSize().padding(padding),
+                    modifier         = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -169,7 +200,9 @@ fun HomeScreen(
             }
         } else {
             LazyColumn(
-                modifier       = Modifier.fillMaxSize().padding(padding),
+                modifier       = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
                 item {

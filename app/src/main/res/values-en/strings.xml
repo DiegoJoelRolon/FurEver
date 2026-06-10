@@ -143,4 +143,46 @@
 
     <string name="accept">Accept</string>
     <string name="location">Location</string>
+    <string name="create_account">Create Account</string>
+
+    <string name="complete_your_details">Complete your details to continue</string>
+
+    <string name="first_name">First Name *</string>
+
+    <string name="last_name">Last Name</string>
+
+    <string name="email_hint">Email *</string>
+
+    <string name="password_hint">Password *</string>
+
+    <string name="phone">Phone</string>
+
+    <string name="city">City</string>
+
+    <string name="already_have_account">Already have an account? Sign in</string>
+    <string name="selected_photo">Selected photo</string>
+
+    <string name="edit_pet">Edit %1$s</string>
+    <string name="edit">Edit</string>
+
+    <string name="status">Status</string>
+
+    <string name="save">Save</string>
+    <string name="no_description">No description</string>
+
+    <string name="interested_pet">Interested in this pet? Contact the owner directly:</string>
+
+    <string name="request_sent">Request sent</string>
+
+    <string name="waiting_owner_response">Waiting for the owner\'s response</string>
+
+    <string name="request_accepted">Request accepted! The owner will contact you.</string>
+
+    <string name="request_adoption_title">Request adoption of %1$s</string>
+
+    <string name="request_adoption_message">A request will be sent to the owner. If they accept it, you will receive their contact information to arrange the adoption.</string>
+
+    <string name="send_request">Send Request</string>
+
+    <string name="request_adoption">Request Adoption</string>
 </resources>

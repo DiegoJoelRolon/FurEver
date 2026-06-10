@@ -47,7 +47,7 @@ object LocationHelper {
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
             val address = addresses?.firstOrNull()
 
-            // Intentar varios campos en orden de preferencia
+
             address?.locality                          // ciudad principal
                 ?: address?.subAdminArea               // municipio
                 ?: address?.adminArea                  // provincia como último recurso

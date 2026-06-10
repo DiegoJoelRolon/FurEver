@@ -143,4 +143,46 @@
 
     <string name="accept">Aceitar</string>
     <string name="location">Localização</string>
+    <string name="create_account">Criar Conta</string>
+
+    <string name="complete_your_details">Preencha seus dados para continuar</string>
+
+    <string name="first_name">Nome *</string>
+
+    <string name="last_name">Sobrenome</string>
+
+    <string name="email_hint">E-mail *</string>
+
+    <string name="password_hint">Senha *</string>
+
+    <string name="phone">Telefone</string>
+
+    <string name="city">Cidade</string>
+
+    <string name="already_have_account">Já tem uma conta? Faça login</string>
+    <string name="selected_photo">Foto selecionada</string>
+
+    <string name="edit_pet">Editar %1$s</string>
+    <string name="edit">Editar</string>
+
+    <string name="status">Status</string>
+
+    <string name="save">Salvar</string>
+    <string name="no_description">Não Descrição</string>
+
+    <string name="interested_pet">Tem interesse neste pet? Entre em contato diretamente com o dono:</string>
+
+    <string name="request_sent">Solicitação enviada</string>
+
+    <string name="waiting_owner_response">Aguardando resposta do dono</string>
+
+    <string name="request_accepted">Solicitação aceita! O dono entrará em contato com você.</string>
+
+    <string name="request_adoption_title">Solicitar adoção de %1$s</string>
+
+    <string name="request_adoption_message">Uma solicitação será enviada ao dono. Se ele aceitar, você receberá suas informações de contato para combinar a adoção.</string>
+
+    <string name="send_request">Enviar Solicitação</string>
+
+    <string name="request_adoption">Solicitar Adoção</string>
 </resources>

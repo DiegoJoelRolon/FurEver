@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.furever.auth.AuthState
 import com.example.furever.auth.AuthViewModel
 import com.example.furever.location.LocationHelper
+import com.example.furever.R
 
 @Composable
 fun RegisterScreen(authViewModel: AuthViewModel, onNavigateToLogin: () -> Unit) {
@@ -72,8 +74,9 @@ fun RegisterScreen(authViewModel: AuthViewModel, onNavigateToLogin: () -> Unit) 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(24.dp))
-            Text("Crear cuenta", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF3E2723))
-            Text("Completá tus datos para continuar", fontSize = 14.sp, color = Color(0xFF795548))
+            Text(
+                stringResource(R.string.create_account), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF3E2723))
+            Text(stringResource(R.string.complete_your_details), fontSize = 14.sp, color = Color(0xFF795548))
             Spacer(modifier = Modifier.height(24.dp))
 
             Card(
@@ -93,27 +96,26 @@ fun RegisterScreen(authViewModel: AuthViewModel, onNavigateToLogin: () -> Unit) 
                     val fieldShape = RoundedCornerShape(12.dp)
 
                     OutlinedTextField(value = name, onValueChange = { name = it },
-                        label = { Text("Nombre *") }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.first_name)) }, modifier = Modifier.fillMaxWidth(),
                         shape = fieldShape, colors = fieldColors)
 
                     OutlinedTextField(value = lastname, onValueChange = { lastname = it },
-                        label = { Text("Apellido") }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.last_name)) }, modifier = Modifier.fillMaxWidth(),
                         shape = fieldShape, colors = fieldColors)
 
                     OutlinedTextField(value = email, onValueChange = { email = it },
-                        label = { Text("Email *") }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.email)) }, modifier = Modifier.fillMaxWidth(),
                         shape = fieldShape, colors = fieldColors)
 
                     OutlinedTextField(value = password, onValueChange = { password = it },
-                        label = { Text("Contraseña *") }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.password)) }, modifier = Modifier.fillMaxWidth(),
                         shape = fieldShape, colors = fieldColors,
                         visualTransformation = PasswordVisualTransformation())
 
                     OutlinedTextField(value = phone, onValueChange = { phone = it },
-                        label = { Text("Teléfono") }, modifier = Modifier.fillMaxWidth(),
+                        label = { Text(stringResource(R.string.phone)) }, modifier = Modifier.fillMaxWidth(),
                         shape = fieldShape, colors = fieldColors)
 
-                    // Ciudad + botón GPS
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -121,7 +123,7 @@ fun RegisterScreen(authViewModel: AuthViewModel, onNavigateToLogin: () -> Unit) 
                         OutlinedTextField(
                             value = city,
                             onValueChange = { city = it },
-                            label = { Text("Ciudad") },
+                            label = { Text(stringResource(R.string.city)) },
                             modifier = Modifier.weight(1f),
                             shape = fieldShape,
                             colors = fieldColors
@@ -162,14 +164,14 @@ fun RegisterScreen(authViewModel: AuthViewModel, onNavigateToLogin: () -> Unit) 
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4033)),
                         enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
                     ) {
-                        Text("Registrarse", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                        Text(stringResource(R.string.signup), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                     }
 
                     TextButton(
                         onClick = onNavigateToLogin,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("¿Ya tenés cuenta? Iniciá sesión",
+                        Text(stringResource(R.string.already_have_account),
                             color = Color(0xFF795548), fontSize = 14.sp)
                     }
 
